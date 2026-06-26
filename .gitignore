@@ -1,7 +1,7 @@
-/backend/node_modules/
+./backend/node_modules
 
-/game/node_modules
-/game/README.txt
+./game/node_modules
+./game/README.txt
 
-/frontend/node_modules
-/frontend/.vscode
+./frontend/node_modules
+./frontend/.vscode
