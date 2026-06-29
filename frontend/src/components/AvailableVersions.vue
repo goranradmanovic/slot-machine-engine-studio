@@ -22,7 +22,7 @@
                 <div class="flex flex-column justify-content-center align-items-center gap-3 w-full">
                     <Select 
                         v-model="selectedVersion" 
-                        :options="configData" 
+                        :options="slotConfigStore.availableConfigVersions" 
                         placeholder="Select a version to edit" 
                         class="w-full sm:w-56" 
                     />
@@ -42,11 +42,10 @@
 <script setup lang="ts">
     import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
     import { useToast } from 'primevue/usetoast'
-    import { useConfig } from '@/composables/useConfig'
     import { useSlotConfigStore } from '@/stores/slotConfigStore'
     import { type StatusVersion, type FormValues} from '@/types/AvailableVersions'
-    
-    const prop = defineProps({
+
+    const props = defineProps({
         btnLabel: {
             type: String,
             required: false,
@@ -58,7 +57,6 @@
 
     const toast = useToast()
     const slotConfigStore = useSlotConfigStore()
-    const { configData, fetchConfig } = useConfig()
 
     const selectedVersion = ref<string | null>(null)
     const status = ref<StatusVersion | null>(null)
@@ -95,7 +93,7 @@
 
     onMounted(async () => {
         try {
-            await fetchConfig()
+            await slotConfigStore.getAvailableConfigVersions()
             toast.add({ severity: 'success', summary: 'Success', detail: 'Config loaded.', life: 4000 })
         } catch (err) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to fetch config versions.', life: 4000 })

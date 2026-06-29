@@ -40,6 +40,7 @@
     import SymbolsTheme from './settings/SymbolsTheme.vue'
     import AudioPack from './settings/AudioPack.vue'
     import CanvasCustomization from './settings/CanvasCustomization.vue'
+    import { defaultConfig } from '@/utils/default-config.ts';
 
     const props = defineProps<{
         currentConfig: {
@@ -54,34 +55,7 @@
     const { loading } = useConfig()
 
     // Default config values
-    const config = ref({
-        "REEL_COUNT": 5,
-        "SYMBOLS_PER_REEL": 3,
-        "SYMBOL_SIZE": 120,
-        "SYMBOLS_TYPE": "defaults",
-        "SOUND_TYPE": "defaults",
-        "BACKGROUND_COLOR": "1099bb", // Hex string format without #
-        "FRAME_SPINE_BG_COLOR": "000000",
-        "FRAME_SPINE_BG_COLOR_OPACITY": 0,
-        "REEL_SPACING": 8,
-        "HAS_FREE_SPINS": true,
-        "NR_OF_FREE_SPINS": 10,
-        "SPIN_DELAY": 200,
-        "STOP_SPIN_DELAY": 200,
-        "SPIN_DURATION": 1800,
-        "CHECK_WIN_DELAY": 600,
-        "BET": 10,
-        "WINLINES": [
-            { "id": 1, "line": [1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0] },
-            { "id": 2, "line": [0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0] },
-            { "id": 3, "line": [0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0] },
-            { "id": 4, "line": [0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0] },
-            { "id": 5, "line": [0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0] },
-            { "id": 6, "line": [0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1] },
-            { "id": 7, "line": [1,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0] },
-            { "id": 8, "line": [0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,1] }
-        ]
-    });
+    const config = ref(defaultConfig);
 
     watch(() => props.currentConfig, (newConfig) => {
         if (newConfig && Object.keys(newConfig).length > 0) {

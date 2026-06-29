@@ -8,6 +8,7 @@ router.route('/')
 
 router.route('/:filename')
     .get(ConfigController.getConfigFile) // GET /api/v1/configs/:filename
+    .post(ConfigController.createConfigFile) // POST /api/v1/configs/
     .patch(ConfigController.updateConfigFile) // PATCH /api/v1/configs/:filename
 
 export default router
