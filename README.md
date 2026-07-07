@@ -10,6 +10,8 @@ A powerful, full-stack development tool designed for live-editing and hot-reload
 * **File Persistence:** Read and save modified JSON payloads directly back to your backend file system.
 * **Instant Hot-Reload:** Inject live configuration changes into the active Pixi.js slot game instance without refreshing the page or losing canvas context.
 * **Decoupled Architecture:** Clean sandboxing using an `iframe` ensuring your game environment remains separated from the editing control panel.
+* **Enterprise Configuration Management (CRUD)** Full lifecycle management platform with a seamless CRUD workflow.
+* **Live Simulation Dashboard (100k+ Spins):** Users can now run a live simulation of over 100,000 spins directly from the dashboard, getting real-time feedback on hit frequencies, RTP trends, and volatility performance before pushing a config to production.
 
 ---
 
