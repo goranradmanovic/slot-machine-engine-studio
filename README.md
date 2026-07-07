@@ -103,3 +103,7 @@ Default URL: http://localhost:9000
 ![Visual Editor Middle](./screenshots/4.png "Visual Editor")
 ![Visual Editor Bottom](./screenshots/5.png "Visual Editor")
 ![Raw JSON Editor](./screenshots/6.png "Raw JSON Editor")
+![Simulator Dashboard Inactive](./screenshots/7.png "Simulator Dashboard Inactive")
+![Simulator Dashboard Active](./screenshots/8.png "Simulator Dashboard Active")
+![CRUD Config Table](./screenshots/9.png "CRUD Config Table")
+![CRUD Config Table Preview](./screenshots/10.png "CRUD Config Table Preview")
