@@ -3,7 +3,7 @@
         <div class="flex align-items-center gap-3">
             <i class="pi pi-cog text-xl text-primary" />
             <h1 class="text-xl font-bold">Slot Machine Engine Studio</h1>
-            <Tag severity="success" :value="`Active Config: ${slotConfigStore.slotConfigFile}`" />
+            <Tag severity="success" :value="`Active Config: ${slotConfigStore.currentConfigFile}`" />
         </div>
         <nav class="flex gap-4">
             <Button asChild v-slot="slotProps" variant="link">
@@ -11,6 +11,9 @@
             </Button>
             <Button asChild v-slot="slotProps" variant="link">
                 <RouterLink to="/config-editor" :class="slotProps.class">Config Editor</RouterLink>
+            </Button>
+            <Button asChild v-slot="slotProps" variant="link">
+                <RouterLink to="/config-files" :class="slotProps.class">Config Files</RouterLink>
             </Button>
         </nav>
         <div class="flex gap-3">

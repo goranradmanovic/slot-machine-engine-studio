@@ -14,12 +14,13 @@ export function useConfig() {
   // Ensure there are no double-slashes or missing divider tokens
   const cleanBaseApiUrl = `${baseUrl.replace(/\/$/, '')}${port}${version}`
 
-  const fetchConfig = async (filename: string = '', options: RequestInit = {}) => {
+  // param - is name of the file like reels_v1.json or part of the URL
+  const fetchConfig = async (param: string = '', options: RequestInit = {}) => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await fetch(`${cleanBaseApiUrl}/configs/${filename}`, options)
+      const response = await fetch(`${cleanBaseApiUrl}/configs/${param}`, options)
       
       // Handle HTTP error status codes safely
       if (!response.ok) {
@@ -31,7 +32,7 @@ export function useConfig() {
       return data;
     } catch (err) {
       const errMsg = (err as Error).message || 'Failed to communicate with configuration API'
-      console.error(`[useConfig] Error fetching ${filename}:`, err)
+      console.error(`[useConfig] Error fetching ${param}:`, err)
       error.value = errMsg
       configData.value = null // Clean fallback state
     } finally {

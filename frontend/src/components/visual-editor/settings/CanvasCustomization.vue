@@ -10,11 +10,11 @@
                     <label class="font-medium">Game Stage Background Color</label>
                 
                     <div class="flex align-items-center gap-3 p-3 bg-surface-50 border-round border-1 surface-border">
-                        <ColorPicker v-model="config.BACKGROUND_COLOR" format="hex" />
+                        <ColorPicker v-model="config.BACKGROUND_COLOR" />
                         
                         <div class="flex flex-column gap-1">
                             <span class="font-mono font-bold text-sm">
-                                #{{ config.BACKGROUND_COLOR }}
+                                {{ config.BACKGROUND_COLOR }}
                             </span>
                             <small class="text-xs text-color-secondary">
                                 Click the color box to open the spectrum grid palette
@@ -28,11 +28,11 @@
                 
                     <div class="flex align-items-center gap-3 p-3 bg-surface-50 border-round border-1 surface-border">
                         <div class="flex align-items-center gap-3 p-3">
-                            <ColorPicker v-model="config.FRAME_SPINE_BG_COLOR" format="hex" />
+                            <ColorPicker v-model="config.FRAME_SPINE_BG_COLOR" />
                             
-                            <div class="flex flex-column gap-1">
+                            <div class="flex flex-column gap-1 w-10rem">
                                 <span class="font-mono font-bold text-sm">
-                                    #{{ config.FRAME_SPINE_BG_COLOR }}
+                                    {{ config.FRAME_SPINE_BG_COLOR }}
                                 </span>
                                 <small class="text-xs text-color-secondary">
                                     Click the color box to open the spectrum grid palette
@@ -60,6 +60,7 @@
 
 <script setup lang="ts">
     import { type Canvas } from '@/types/SlotConfig'
+    import ColorPicker from './ColorPicker.vue'
 
     const config = defineModel<Canvas>({ required: true })
 </script>

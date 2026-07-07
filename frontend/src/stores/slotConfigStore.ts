@@ -7,14 +7,21 @@ export const useSlotConfigStore = defineStore('slotConfig', () => {
 
   const { fetchConfig } = useConfig()
 
-  const slotConfigVersion = ref<string | null>(null)
-  const availableConfigVersions = ref<[]>([])
+  const currentUsedVersion = ref<string | null>(null)
+  const configVersions = ref<[]>([])
 
-  const slotConfigFile = computed(() => slotConfigVersion.value ? `reels_${slotConfigVersion.value}.json` : 'Default')
+  const currentConfigFile = computed(() => currentUsedVersion.value ? currentUsedVersion.value : 'Default')
+  const currentConfigFiles = computed(() => {
+    if (configVersions.value.length > 0) {
+      return configVersions.value.map((file: { name: string }, index) => {
+        return { name: file.name, code: `v${index + 1}` }
+      })
+    }
+  })
 
-  const setConfigVersion = (value: null) => slotConfigVersion.value = value
+  const setConfigVersion = (value: null) => currentUsedVersion.value = value
 
-  const getAvailableConfigVersions = async () => availableConfigVersions.value = await fetchConfig()
+  const getConfigVersions = async () => configVersions.value = await fetchConfig('files')
 
-  return { slotConfigVersion, availableConfigVersions, slotConfigFile, setConfigVersion, getAvailableConfigVersions }
+  return { currentConfigFiles, currentConfigFile, setConfigVersion, getConfigVersions }
 })

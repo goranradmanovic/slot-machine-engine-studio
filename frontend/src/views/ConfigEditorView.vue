@@ -20,14 +20,6 @@
       <template #header>
         <div class="flex gap-2 align-items-center justify-content-between w-full">
           <h2 class="text-2xl font-bold">Config Editor</h2>
-          <Button
-            @click="createConfig()"
-            :disabled="isCreateConfig || loading"
-            :loading="loading"
-            icon="pi pi-plus" 
-            label="Create New Config" 
-            severity="success" 
-          />
         </div>
       </template>
 
@@ -35,7 +27,7 @@
         <div class="flex flex-column gap-3 mb-4">
           <Message severity="secondary">
             <h4 class="m-0 font-normal">Edit the JSON configuration below.</h4>
-            <h4 class="m-0 font-normal">Editing current file: <span class="font-bold text-primary font-italic">{{ targetFile }}.json</span></h4>
+            <h4 class="m-0 font-normal">Editing current file: <span class="font-bold text-primary font-italic">{{ selectedVersion }}</span></h4>
           </Message>
 
           <Message v-if="statusMessage" :severity="statusType" closable>{{ statusMessage }}</Message>
@@ -45,6 +37,7 @@
           <TabList>
             <Tab value="0"><i class="pi pi-sliders-h mr-2" /> Visual Adjuster</Tab>
             <Tab value="1"><i class="pi pi-code mr-2" /> Raw JSON</Tab>
+            <Tab value="2"><i class="pi pi-wave-pulse mr-2" /> Simulation Run Dashboard</Tab>
           </TabList>
           
           <TabPanels>
@@ -67,6 +60,10 @@
                   />
                 </div>
             </TabPanel>
+
+            <TabPanel value="2">
+              <SimulationRunDashboard :config="parsedConfig" />
+            </TabPanel>
           </TabPanels>
         </Tabs>
       </div>
@@ -82,20 +79,15 @@
   import { useConfig } from '@/composables/useConfig'
   import AvailableVersions from '@/components/AvailableVersions.vue'
   import VisualAdjuster from '@/components/visual-editor/VisualAdjuster.vue'
-  import { defaultConfig } from '@/utils/default-config.ts'
-  import { useSlotConfigStore } from '@/stores/slotConfigStore'
+  import SimulationRunDashboard from '@/components/simulation-dashboard/SimulationRunDashboard.vue'
 
-  const slotConfigStore = useSlotConfigStore()
+
   const toast = useToast()
   const { configData, loading, error, fetchConfig } = useConfig()
 
-  const selectedVersion = ref<string | null>(null)
-  const statusMessage = ref('')
+  const selectedVersion = ref<string>('')
+  const statusMessage = ref<string>('')
   const statusType = ref<'success' | 'error' | 'info' | 'warn'>('info')
-  
-  const targetFile = computed(() => `reels_${selectedVersion.value}`)
-  const newFile = computed(() => `reels_v${slotConfigStore.availableConfigVersions.length + 1}`)
-  const isCreateConfig = computed(() => slotConfigStore.availableConfigVersions?.length > 0 ? false : true)
 
   // computed property to guarantee an object format
   const parsedConfig = computed(() => {
@@ -114,7 +106,7 @@
   const loadConfig = async () => {
     try {
       statusMessage.value = ''
-      await fetchConfig(targetFile.value)
+      await fetchConfig(`files/${selectedVersion.value}`)
       if (error.value) throw new Error('Could not find or read config file')
     } catch (err) {
       statusType.value = 'error'
@@ -140,7 +132,7 @@
         payload = structuredClone(payload);
       }
     
-      await fetchConfig(targetFile.value, {
+      await fetchConfig(`files/${selectedVersion.value}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -155,28 +147,6 @@
       statusType.value = 'error'
       statusMessage.value = (err as Error).message
       toast.add({ severity: 'error', summary: 'Save Failed', detail: (err as Error).message, life: 4000 })
-    }
-  }
-
-  const createConfig = async () => {
-    try {
-      statusMessage.value = ''
-    
-      await fetchConfig(newFile.value, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(defaultConfig)
-      })
-
-      setTimeout(async () => {
-        await slotConfigStore.getAvailableConfigVersions()
-      }, 1000)
-
-      if (error.value) throw new Error('Server rejected creating new config')
-
-      toast.add({ severity: 'success', summary: 'Saved', detail: 'Configuration created successfully', life: 8000 })
-    } catch (err) {
-      toast.add({ severity: 'error', summary: 'Creation Failed', detail: (err as Error).message, life: 8000 })
     }
   }
 

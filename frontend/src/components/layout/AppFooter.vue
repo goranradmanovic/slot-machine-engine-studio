@@ -32,7 +32,7 @@
 
     const slotConfigStore = useSlotConfigStore()
     const currentYear = computed(() => new Date().getFullYear())
-    const selectedVersion = computed(() => slotConfigStore.slotConfigVersion)
+    const selectedVersion = computed(() => slotConfigStore.currentConfigFile)
     const isConfigLoaded = computed(() => !!selectedVersion.value)
-    const activeFileLabel = computed(() => isConfigLoaded.value ? slotConfigStore.slotConfigFile : 'Default config loaded')
+    const activeFileLabel = computed(() => isConfigLoaded.value ? slotConfigStore.currentConfigFile : 'Default config loaded')
 </script>

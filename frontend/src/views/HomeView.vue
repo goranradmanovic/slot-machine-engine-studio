@@ -37,16 +37,15 @@
 
   const gameStore = useGameStore()
   const toast = useToast()
-  const selectedVersion = ref<string | null>(null)
   const gameFrame = ref<HTMLIFrameElement | null>(null)
 
-  const applyVersion = () => {
-    if (!selectedVersion.value) return
+  const applyVersion = selectedVersion => {
+    if (!selectedVersion) return
 
     gameFrame.value?.contentWindow?.postMessage(
       {
         type: 'LOAD_CONFIG',
-        version: selectedVersion.value
+        version: selectedVersion
       },
       '*'
     )
@@ -69,8 +68,7 @@
   }
 
   const handleLoadConfig = async (payload: string) => {
-    selectedVersion.value = payload
-    applyVersion()
+    applyVersion(payload)
   }
 
   onMounted(() => {

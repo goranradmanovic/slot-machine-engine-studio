@@ -13,19 +13,27 @@
                 <Fieldset v-if="status" legend="Status" class="overflow-auto w-full p-2">
                     <Message :severity="status.severity">
                         <span class="text-sm">  
-                            Current Config: {{ selectedVersion || 'Default' }} <br />
+                            Current Config: {{ selectedVersion.name || 'Default' }} <br />
                             Status: {{ status?.summary || '' }}
                         </span>
                     </Message>
                 </Fieldset>
 
                 <div class="flex flex-column justify-content-center align-items-center gap-3 w-full">
-                    <Select 
-                        v-model="selectedVersion" 
-                        :options="slotConfigStore.availableConfigVersions" 
-                        placeholder="Select a version to edit" 
-                        class="w-full sm:w-56" 
-                    />
+                    <Select v-model="selectedVersion" :options="slotConfigStore.currentConfigFiles" optionLabel="name" filter filterBy="name" showClear placeholder="Select a Config Version" class="w-full md:w-56">
+                        <template #value="slotProps">
+                            <div v-if="slotProps.value" class="flex align-items-center gap-2">
+                                <FileImport />
+                                <div>{{ slotProps.value.code }}</div>
+                            </div>
+                        </template>
+                        <template #option="slotProps">
+                            <div class="flex align-items-center gap-2">
+                                <File />
+                                <div>{{ slotProps.option.code }}</div>
+                            </div>
+                        </template>
+                    </Select>
                     <Button 
                         type="submit" 
                         severity="secondary" 
@@ -58,14 +66,14 @@
     const toast = useToast()
     const slotConfigStore = useSlotConfigStore()
 
-    const selectedVersion = ref<string | null>(null)
+    const selectedVersion = ref<{name: string, code: string} | null>(null)
     const status = ref<StatusVersion | null>(null)
     const initialValues = ref<FormValues>({ selectedVersion: '' })
     
     watch(selectedVersion, (newValue) => {
         if (newValue) {
             status.value = null
-            slotConfigStore.slotConfigVersion = null
+            slotConfigStore.setConfigVersion(null)
         }
     })
 
@@ -83,21 +91,25 @@
     // Form Submission Event
     const onFormSubmit = async ({ valid }: { valid: boolean }) => {
         if(valid) {
-            slotConfigStore.slotConfigVersion = selectedVersion.value
-            emit('load-config', selectedVersion.value)
+            slotConfigStore.setConfigVersion(selectedVersion.value.name)
+            emit('load-config', selectedVersion.value.name)
             status.value = { severity: 'success', summary: 'Loaded Configuration Successfully' }
         } else {
             status.value = { severity: 'error', summary: 'Failed to Load Configuration' }
         }
     }
 
-    onMounted(async () => {
+    const getConfigVersions = async () => {
         try {
-            await slotConfigStore.getAvailableConfigVersions()
+            await slotConfigStore.getConfigVersions()
             toast.add({ severity: 'success', summary: 'Success', detail: 'Config loaded.', life: 4000 })
         } catch (err) {
             toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to fetch config versions.', life: 4000 })
         }
+    }
+
+    onMounted(async () => {
+        await getConfigVersions()
     })
 
     onBeforeUnmount(() => {

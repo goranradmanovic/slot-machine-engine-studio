@@ -97,7 +97,7 @@ export class SlotMachine {
             const width = this.config.SYMBOL_SIZE * this.config.SYMBOLS_PER_REEL + POSITION_OFFSET * 2; // Width now based on symbols per reel
             const height = this.reelHeight * this.config.REEL_COUNT + this.config.REEL_SPACING * (this.config.REEL_COUNT - 1) + POSITION_OFFSET * 2 // Height based on reel count
             const background = new PIXI.Graphics();
-            background.beginFill(`#${frameBgColor}`, frameBgColorOpacity); // ** ADDED CODE ** //
+            background.beginFill(`0x${frameBgColor}`, frameBgColorOpacity); // ** ADDED CODE ** //
             background.drawRect(
                 POSITION_OFFSET * -1,
                 POSITION_OFFSET * -1,

@@ -3,12 +3,13 @@ import { ConfigController } from '../controllers/configs.controller.ts'
 
 const router = Router()
 
-router.route('/')
-    .get(ConfigController.getAllConfigVersions) // GET /api/v1/configs
+router.route('/files')
+    .get(ConfigController.listFiles) // GET /api/v1/configs/files
+    .post(ConfigController.createFile); // POST /api/v1/configs/files
 
-router.route('/:filename')
-    .get(ConfigController.getConfigFile) // GET /api/v1/configs/:filename
-    .post(ConfigController.createConfigFile) // POST /api/v1/configs/
-    .patch(ConfigController.updateConfigFile) // PATCH /api/v1/configs/:filename
+router.route('/files/:filename')
+    .get(ConfigController.getFile) // GET /api/v1/configs/files/:filename
+    .patch(ConfigController.updateFile) // PATCH /api/v1/configs/files/:filename
+    .delete(ConfigController.deleteFile); // DELETE /api/v1/configs/files/:filename
 
 export default router

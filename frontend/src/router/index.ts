@@ -15,6 +15,12 @@ const router = createRouter({
       // lazy-loaded when the route is visited.
       component: () => import('../views/ConfigEditorView.vue'),
     },
+    {
+      path: '/config-files',
+      name: 'config-files',
+      // lazy-loaded when the route is visited.
+      component: () => import('../views/ConfigFilesView.vue'),
+    }
   ],
 })
 

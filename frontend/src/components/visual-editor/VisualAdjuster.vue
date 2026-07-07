@@ -20,7 +20,8 @@
             <Button 
                 @click="saveChanges" 
                 icon="pi pi-save" 
-                label="Save Changes" severity="success" 
+                label="Save Changes"
+                severity="success" 
                 :disabled="loading"
                 :loading="loading"
                 class="mt-2"

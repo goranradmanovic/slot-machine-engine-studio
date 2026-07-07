@@ -25,8 +25,8 @@ export class Game {
     constructor() {
         // ** ADDED CODE ** //
         const initialBg = this.currentConfig?.BACKGROUND_COLOR 
-            ? `#${this.currentConfig.BACKGROUND_COLOR}` 
-            : '#1099bb';
+            ? `0x${this.currentConfig.BACKGROUND_COLOR}` 
+            : '0x1099bb';
 
         this.app = new PIXI.Application({
             width: APP_WIDTH,
