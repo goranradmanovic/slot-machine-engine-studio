@@ -1,20 +1,44 @@
 <template>
     <Panel>
         <template #header>
-            <div class="flex gap-2 align-items-center justify-content-between w-full">
-                <h2 class="text-2xl font-bold">Config Files Table</h2>
-                <Button
-                @click="createConfig()"
-                :disabled="!newFile || loading"
-                :loading="loading"
-                icon="pi pi-plus" 
-                label="Create New Config" 
-                severity="success" 
-                />
-            </div>
+            <h2 class="text-2xl font-bold">Config Files Table</h2>
         </template>
 
-        <DataTable :value="files" :loading="loading" paginator :rows="10" :rowsPerPageOptions="[5, 10, 20]" stripedRows tableStyle="min-width: 50rem" class="files_table">
+        <DataTable
+            v-model:filters="filters"
+            :value="files"
+            :loading="loading"
+            paginator
+            :rows="10"
+            :rowsPerPageOptions="[5, 10, 20]"
+            dataKey="name"
+            filterDisplay="row"
+            :globalFilterFields="globalFilterFields"
+            stripedRows
+            tableStyle="min-width: 50rem"
+            class="files_table"
+        >
+            <template #header>
+                <div class="flex gap-2 align-items-center justify-content-between w-full pb-4">
+                    <IconField iconPosition="left">
+                        <InputIcon>
+                            <Search />
+                        </InputIcon>
+                        <InputText v-model="filters['global'].value" type="text" placeholder="Keyword Search" />
+                    </IconField>
+
+                    <Button
+                        @click="createConfig()"
+                        :disabled="!newFile || loading"
+                        :loading="loading"
+                        icon="pi pi-plus" 
+                        label="Create New Config" 
+                        severity="success" 
+                    />
+                </div>
+            </template>
+            <template #empty>No Config files found.</template>
+
             <Column field="name" header="Name"/>
             <Column field="path" header="File Path" #body="slotProps">
                 <div class="flex align-items-center gap-1">
@@ -69,17 +93,21 @@
                     <Button icon="pi pi-eye" @click="openEditDialog(slotProps.data.name)" />
                     <Button severity="warn" icon="pi pi-pencil" @click="openEditDialog(slotProps.data.name, true)" />
                     <Button severity="danger" icon="pi pi-trash" @click="openDeleteDialog(slotProps.data.name)" />
+                    <Button severity="contrast" icon="pi pi-download" @click="downloadFile(slotProps.data.name)">
+                        <Spinner v-if="downloadingFile === slotProps.data.name && loading" class="spinner" />
+                    </Button>
                 </div>
             </Column>
         </DataTable>
     </Panel>
 
     <ViewEditDialog v-model:visible="editDialog.visible" :filename="editDialog.filename" :is-edit="editDialog.edit" />
-    <DeleteFileDialog v-model:visible="deleteDialog.visible" :filename="deleteDialog.filename" @deleted="deleteConfigFile" />
+    <DeleteFileDialog v-model:visible="deleteDialog.visible" :filename="deleteDialog.filename" @deleted="handleDeleteConfigFile" />
 </template>
 
 <script setup lang="ts">
-    import { ref, onMounted, computed } from 'vue';
+    import { ref, onMounted, computed } from 'vue'
+    import { FilterMatchMode } from '@primevue/core/api'
     import { defaultConfig } from '@/utils/default-config.ts'
     import { useConfig } from '@/composables/useConfig'
     import { useToast } from 'primevue/usetoast'
@@ -89,13 +117,26 @@
     const { configData, loading, error, fetchConfig } = useConfig()
     const toast = useToast()
 
-    const editDialog = ref({
+    const filters = ref({
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        path: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        extension: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        sizeInBytes: { value: null, matchMode: FilterMatchMode.EQUALS },
+        createdAt: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        updatedAt: { value: null, matchMode: FilterMatchMode.CONTAINS },
+        lastAccessedAt: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    })
+
+    const globalFilterFields = ref<string[]>(['name', 'path', 'extension', 'sizeInBytes', 'createdAt', 'updatedAt', 'lastAccessdAt'])
+
+    const editDialog = ref<{}>({
         visible: false,
         filename: '',
         edit: false
     })
 
-    const deleteDialog = ref({
+    const deleteDialog = ref<{}>({
         visible: false,
         filename: ''
     })
@@ -114,6 +155,8 @@
             filename
         }
     }
+
+    const downloadingFile = ref<string | null>(null)
 
     const files = computed(() => configData.value ?? [])
     const totalFiles = computed(() => configData.value ? configData.value.length : 0)
@@ -170,9 +213,46 @@
     }
 
     // Delete config file
-    const deleteConfigFile = () => {
+    const handleDeleteConfigFile = () => {
         // Remove the deleted file from the configData array localy so that the table updates without needing to refetch the data from the server
         configData.value = configData.value.filter(file => file.name !== deleteDialog.value.filename)
+    }
+
+    // Download config file
+    const downloadFile = async (filename: string) => {
+        try {
+            // Prevent multiple clicks on the same/other buttons while downloading
+            if (downloadingFile.value) return
+
+            downloadingFile.value = filename
+
+            const response = await fetchConfig(`files/download/${filename}`)
+            
+            if (error.value) throw new Error('Could not download config file')
+
+            // Convert payload stream directly to a blob object
+            const jsonString = JSON.stringify(response, null, 2)
+            const blob = new Blob([jsonString], { type: 'application/json' })
+            const url = window.URL.createObjectURL(blob)
+
+            const link = document.createElement('a')
+            link.href = url
+            link.download = filename
+            document.body.appendChild(link)
+
+            link.click()
+
+            document.body.removeChild(link)
+            window.URL.revokeObjectURL(url)
+    
+            toast.add({ severity: 'success', summary: 'Success', detail: 'Config file downloaded.', life: 4000 })
+        } catch (err) {
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to download config file.', life: 4000 })
+            throw err // Re-throw so form handler captures the failure state
+        } finally {
+            // Reset state to remove the spinner once finished or failed
+            downloadingFile.value = null;
+        }
     }
 
     onMounted(async () => {

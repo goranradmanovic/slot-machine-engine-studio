@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { Container, DisplayObject } from 'pixi.js';
 import { SlotMachine } from './slots/SlotMachine';
 import { AssetLoader } from './utils/AssetLoader';
 import { UI } from './ui/UI';
@@ -60,6 +61,36 @@ export class Game {
         // Register the game loop ticker exactly ONCE during startup
         this.app.ticker.add(this.update);
     }
+
+    /*private getElement() {
+        const mainSpinNode = this.findChildByName(this.app.stage.children, 'main-spin')
+
+        if (mainSpinNode) {
+            console.log("Found it!", mainSpinNode)
+        } else {
+            console.log("Node 'main-spin' does not exist in the tree")
+        }
+    }
+
+    // Helper function
+    private findChildByName(nodes: DisplayObject[], targetName: string): DisplayObject | null {
+        for (const child of nodes) {
+            if (child.name === targetName) return child
+
+            // Cast child as a Container to safely check for nested children
+            const container = child as Container
+
+            if (container.children && container.children.length > 0) {
+                const found: DisplayObject | null = this.findChildByName(container.children, targetName)
+                
+                // Return the found node back up
+                if (found) return found
+            }
+        }
+        
+        return null
+    }*/
+
 
     // ** ADDED CODE ** //
     private handlePostMessage(): void {

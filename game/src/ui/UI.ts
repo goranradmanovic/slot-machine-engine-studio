@@ -54,6 +54,8 @@ export class UI {
             this.spinButton.interactive = true;
             this.spinButton.cursor = 'pointer';
 
+            this.spinButton.name = 'main-spin'
+
             this.spinButton.on('pointerdown', this.onSpinButtonClick.bind(this));
             this.spinButton.on('pointerover', this.onButtonOver.bind(this));
             this.spinButton.on('pointerout', this.onButtonOut.bind(this));

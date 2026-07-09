@@ -12,4 +12,7 @@ router.route('/files/:filename')
     .patch(ConfigController.updateFile) // PATCH /api/v1/configs/files/:filename
     .delete(ConfigController.deleteFile); // DELETE /api/v1/configs/files/:filename
 
+router.route('/files/download/:filename')
+    .get(ConfigController.downloadFile)
+
 export default router

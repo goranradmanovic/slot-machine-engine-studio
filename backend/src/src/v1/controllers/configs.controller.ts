@@ -135,10 +135,40 @@ export class ConfigController {
     static async deleteFile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const filePath = path.join(CONFIG_DIR, req.params.filename)
+
+            if (!filePath.startsWith(CONFIG_DIR)) {
+                res.status(403).json({ error: 'Access denied' })
+                return
+            }
+
             await fs.unlink(filePath)
             res.json({ success: true })
         } catch (error) {
             console.error('Failed to delete config file: ', error)
+            next(error)
+        }
+    }
+
+    // GET /api/v1/configs/files/download/:filename
+    // Download config file from configs directory
+    static async downloadFile(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const filePath = path.join(CONFIG_DIR, req.params.filename)
+        
+            if (!filePath.startsWith(CONFIG_DIR)) {
+                res.status(403).json({ error: 'Access denied' })
+                return
+            }
+
+            const downloadName = req.params.filename
+
+            res.download(filePath, downloadName, err => {
+                if (err) {
+                    console.error('Error downloading file: ', err)
+                    res.status(500).send('Could not download the file.')
+                }
+            })
+        } catch (error) {
             next(error)
         }
     }

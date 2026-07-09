@@ -22,6 +22,7 @@ import TabPanels from 'primevue/tabpanels'
 import TabPanel from 'primevue/tabpanel'
 import Slider from 'primevue/slider'
 import InputNumber from 'primevue/inputnumber'
+import InputText from 'primevue/inputtext'
 import Accordion from 'primevue/accordion'
 import AccordionPanel from 'primevue/accordionpanel'
 import AccordionHeader from 'primevue/accordionheader'
@@ -57,6 +58,9 @@ import InputColorSwatch from 'primevue/inputcolorswatch'
 import InputColorSwatchBackground from 'primevue/inputcolorswatchbackground'
 import InputColorEyeDropper from 'primevue/inputcoloreyedropper'
 import InputColorInput from 'primevue/inputcolorinput'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import Search from '@primeicons/vue/search'
 import { Form } from '@primevue/forms'
 
 import ProgressBar from 'primevue/progressbar'
@@ -101,6 +105,7 @@ app.component('TabPanels', TabPanels)
 app.component('TabPanel', TabPanel)
 app.component('Slider', Slider)
 app.component('InputNumber', InputNumber)
+app.component('InputText', InputText)
 app.component('Accordion', Accordion)
 app.component('AccordionPanel', AccordionPanel)
 app.component('AccordionHeader', AccordionHeader)
@@ -135,5 +140,10 @@ app.component('InputColorEyeDropper', InputColorEyeDropper)
 app.component('InputColorInput', InputColorInput)
 app.component('Popover', Popover)
 app.component('ProgressBar', ProgressBar)
+app.component('IconField', IconField)
+app.component('InputIcon', InputIcon)
+app.component('Search', Search)
+
+
 
 app.mount('#app')

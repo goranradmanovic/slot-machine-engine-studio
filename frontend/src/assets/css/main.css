@@ -81,5 +81,22 @@
         white-space: nowrap;
       }
     }
+
+    .spinner {
+      animation: spin, .5s linear infinite;
+    }
+  }
+}
+
+
+/* Animations */
+
+/* Define the spinning behavior */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }

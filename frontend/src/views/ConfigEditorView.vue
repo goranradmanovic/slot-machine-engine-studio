@@ -37,7 +37,7 @@
           <TabList>
             <Tab value="0"><i class="pi pi-sliders-h mr-2" /> Visual Adjuster</Tab>
             <Tab value="1"><i class="pi pi-code mr-2" /> Raw JSON</Tab>
-            <Tab value="2"><i class="pi pi-wave-pulse mr-2" /> Simulation Run Dashboard</Tab>
+            <Tab value="2"><i class="pi pi-wave-pulse mr-2" /> Engine Math Simulator</Tab>
           </TabList>
           
           <TabPanels>
@@ -62,7 +62,7 @@
             </TabPanel>
 
             <TabPanel value="2">
-              <SimulationRunDashboard :config="parsedConfig" />
+              <EngineSimulator :config="parsedConfig" />
             </TabPanel>
           </TabPanels>
         </Tabs>
@@ -79,7 +79,7 @@
   import { useConfig } from '@/composables/useConfig'
   import AvailableVersions from '@/components/AvailableVersions.vue'
   import VisualAdjuster from '@/components/visual-editor/VisualAdjuster.vue'
-  import SimulationRunDashboard from '@/components/simulation-dashboard/SimulationRunDashboard.vue'
+  import EngineSimulator from '@/components/simulation-dashboard/EngineSimulator.vue'
 
 
   const toast = useToast()
