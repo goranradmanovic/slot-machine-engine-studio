@@ -109,3 +109,8 @@ Default URL: http://localhost:9000
 ![Simulator Dashboard Active](./screenshots/8.png "Simulator Dashboard Active")
 ![CRUD Config Table](./screenshots/9.png "CRUD Config Table")
 ![CRUD Config Table Preview](./screenshots/10.png "CRUD Config Table Preview")
+![Sign In Form](./screenshots/11.png "Sign In Form")
+![Sign Up Form](./screenshots/12.png "Sign Up Form")
+![Forgot Password Form](./screenshots/13.png "Forgot Password Form")
+![Reset Password Form](./screenshots/14.png "Reset Password Form")
+![User popup](./screenshots/15.png "User popup")
