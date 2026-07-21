@@ -23,7 +23,7 @@
         </div>
       </template>
 
-      <div v-if="configData && Object.keys(configData).length > 0" class="flex flex-column gap-2">
+      <div v-if="data && Object.keys(data).length > 0" class="flex flex-column gap-2">
         <div class="flex flex-column gap-3 mb-4">
           <Message severity="secondary">
             <h4 class="m-0 font-normal">Edit the JSON configuration below.</h4>
@@ -48,7 +48,7 @@
             <TabPanel value="1">
                 <div class="px-2">
                   <div class="raw-json-editor mb-4">
-                    <JsonEditorVue v-model="configData" :mode="'text'" :main-menu-bar="true" />
+                    <JsonEditorVue v-model="data" :mode="'text'" :main-menu-bar="true" />
                   </div>
                   <Button
                     @click="saveConfig()"
@@ -76,14 +76,18 @@
   import { ref, computed, toRaw } from 'vue'
   import JsonEditorVue from 'json-editor-vue'
   import { useToast } from 'primevue/usetoast'
-  import { useConfig } from '@/composables/useConfig'
+  import { useApi } from '@/composables/useApi'
+  import { useUserStore } from '@/stores/userStore'
   import AvailableVersions from '@/components/AvailableVersions.vue'
   import VisualAdjuster from '@/components/visual-editor/VisualAdjuster.vue'
   import EngineSimulator from '@/components/simulation-dashboard/EngineSimulator.vue'
 
-
   const toast = useToast()
-  const { configData, loading, error, fetchConfig } = useConfig()
+  const data = ref<{} | null>(null)
+  const { loading, error, get, patch } = useApi()
+  const userStore = useUserStore()
+  const userId = userStore.getUser?.id
+  const qeuryString = new URLSearchParams({ id: String(userId) }).toString()
 
   const selectedVersion = ref<string>('')
   const statusMessage = ref<string>('')
@@ -91,22 +95,23 @@
 
   // computed property to guarantee an object format
   const parsedConfig = computed(() => {
-    if (typeof configData.value === 'string') {
+    if (typeof data.value === 'string') {
       try {
-        return JSON.parse(configData.value);
+        return JSON.parse(data.value)
       } catch (e) {
         // Fallback to empty object if string is partially typed or invalid JSON
         return {};
       }
     }
-    return configData.value || {}
+    return data.value || {}
   })
 
   // Fetch file from backend
   const loadConfig = async () => {
     try {
       statusMessage.value = ''
-      await fetchConfig(`files/${selectedVersion.value}`)
+      //await fetchData(`configs/files/${selectedVersion.value}`)
+      data.value = await get(`configs/files/${selectedVersion.value}?${qeuryString}`)
       if (error.value) throw new Error('Could not find or read config file')
     } catch (err) {
       statusType.value = 'error'
@@ -120,23 +125,19 @@
       statusMessage.value = ''
 
       // If paramConfigData is provided (from child component), use it. Otherwise, fall back to using the local configData state.
-      let rawData = paramConfigData || configData.value;
+      let rawData = paramConfigData || data.value;
       
       // Strip Vue proxies to ensure it doesn't lock up UI reactivity
-      let payload = toRaw(rawData);
+      let payload = toRaw(rawData)
 
       // Handle string formats (from raw JSON editor) vs object formats cleanly
       if (typeof payload === 'string') {
-        payload = JSON.parse(payload);
+        payload = JSON.parse(payload)
       } else {
-        payload = structuredClone(payload);
+        payload = structuredClone(payload)
       }
-    
-      await fetchConfig(`files/${selectedVersion.value}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
+
+      await patch(`configs/files/${selectedVersion.value}`, { id: userId, data: payload })
 
       if (error.value) throw new Error('Server rejected saving changes')
 

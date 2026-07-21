@@ -1,129 +1,68 @@
 import { type Request, type Response, type NextFunction } from 'express'
-import { promises as fs } from 'fs'
-import path from 'path'
-import { fileURLToPath } from 'url'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-// Targets the 'config' folder in your project root
-const CONFIG_DIR = path.join(__dirname, '../../..', 'configs')
+import { ConfigService } from '../../../services/config.service.ts'
 
 export class ConfigController {
     
-    // Read all files from config folder
-    static async getFileNames() {
-        return await fs.readdir(CONFIG_DIR)
-    }
-
-    // Get config files metadata
-    static async getFilesMetadata() {
-        const files = await this.getFileNames()
-
-        const fileMetadata = await Promise.all(
-            files.map(async (fileName) => {
-                const filePath = path.join(CONFIG_DIR, fileName)
-                const stats = await fs.stat(filePath)
-
-                return {
-                    name: fileName,
-                    path: filePath,
-                    extension: path.extname(fileName),
-                    sizeInBytes: stats.size,
-                    isFile: stats.isFile(),
-                    isDirectory: stats.isDirectory(),
-                    createdAt: stats.birthtime,
-                    updatedAt: stats.mtime,
-                    lastAccessedAt: stats.atime
-                }
-            })
-        )
-
-        const onlyFiles = fileMetadata.filter(file => file.isFile)
-        return onlyFiles
+    // Helper to dynamically isolate the service per request based on the user
+    private static getServiceForRequest(req: Request): ConfigService {
+        // For fallback, we can check headers, query params, or body. id - is user unique id from DB
+        const userId = req.body?.id || req.query?.id || req.headers['x-id']
+        
+        if (!userId) {
+            // Throw a clean, catchable error if the user context is missing
+            throw new Error('User context missing from request.')
+        }
+        
+        return new ConfigService(`config-${userId}`) // Passing name of user config folder and setting the prop from config service 
     }
 
     // GET /api/v1/configs/files
-    // GET route to dynamically read all config files metadata in the configs directory
     static async listFiles(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const files = await ConfigController.getFilesMetadata();
-            res.json(files);
+            const configService = ConfigController.getServiceForRequest(req)
+            const files = await configService.getFilesMetadata()
+            res.json(files)
         } catch (error) {
-            console.error('Failed to dynamically read config files metadata: ', error)
             next(error)
         }
     }
 
     // POST /api/v1/configs/files
-    // POST the default config JSON data and create the new config file
     static async createFile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const content = req.body;
-            const baseName = 'reels'
+            if (!req.body || Object.keys(req.body).length === 0) {
+                res.status(400).json({ error: 'Request body cannot be empty.' })
+                return
+            }
 
-            const files = await ConfigController.getFileNames()
-
-            const versions = files
-                .filter(f => f.startsWith(baseName))
-                .map(f => {
-                    const match = f.match(/_v(\d+)\.json$/);
-                    return match ? Number(match[1]) : 0;
-                })
-
-            const nextVersion = versions.length
-                ? Math.max(...versions) + 1
-                : 1
-
-            const fileName = `${baseName}_v${nextVersion}.json`
-            const filePath = path.join(CONFIG_DIR, fileName)
-
-            await fs.writeFile(filePath, JSON.stringify(content, null, 2))
+            const configService = ConfigController.getServiceForRequest(req)
+            const newFile = await configService.createNewFile(req.body.data)
             
-            // SUCCESS: Return the exact parsed configuration back to the client!
             res.status(201).json({
-                fileName,
-                version: nextVersion
-            });
+                fileName: newFile.fileName,
+                version: newFile.nextVersion
+            })
         } catch (error) {
-            // Any filesystem errors from writeFile or dynamicallyAppendConfig end up here safely
             next(error)
         }
     }
 
     // GET /api/v1/configs/files/:filename
-    // GET config file and JSON data from it
     static async getFile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const filePath = path.join(CONFIG_DIR, req.params.filename)
-
-            // Security check: prevents directory traversal attacks (e.g., ../../etc/passwd)
-            if (!filePath.startsWith(CONFIG_DIR)) {
-                res.status(403).json({ error: 'Access denied' })
-                return
-            }
-        
-            const data = await fs.readFile(filePath, 'utf8')
-
-            res.json(JSON.parse(data))
+            const configService = ConfigController.getServiceForRequest(req)
+            const data = await configService.readFileContent(String(req.params.filename))
+            res.json(data)
         } catch (error) {
             next(error)
         }
     }
 
     // PATCH /api/v1/configs/files/:filename
-    // Editing config files from configs directory
     static async updateFile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const filePath = path.join(CONFIG_DIR, req.params.filename)
-        
-            if (!filePath.startsWith(CONFIG_DIR)) {
-                res.status(403).json({ error: 'Access denied' })
-                return
-            }
-        
-            // Format with 2-space indentation before saving
-            await fs.writeFile(filePath, JSON.stringify(req.body, null, 2), 'utf8')
-
-            // SUCCESS: Return the exact parsed configuration back to the client!
+            const configService = ConfigController.getServiceForRequest(req)
+            await configService.updateFileContent(String(req.params.filename), req.body.data)
             res.json(req.body)
         } catch (error) {
             next(error)
@@ -131,42 +70,58 @@ export class ConfigController {
     }
 
     // DELETE /api/v1/configs/files/:filename
-    // Deleting config files from configs directory
     static async deleteFile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const filePath = path.join(CONFIG_DIR, req.params.filename)
-
-            if (!filePath.startsWith(CONFIG_DIR)) {
-                res.status(403).json({ error: 'Access denied' })
-                return
-            }
-
-            await fs.unlink(filePath)
+            const configService = ConfigController.getServiceForRequest(req)
+            await configService.deleteFile(String(req.params.filename))
             res.json({ success: true })
         } catch (error) {
-            console.error('Failed to delete config file: ', error)
             next(error)
         }
     }
 
     // GET /api/v1/configs/files/download/:filename
-    // Download config file from configs directory
     static async downloadFile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const filePath = path.join(CONFIG_DIR, req.params.filename)
-        
-            if (!filePath.startsWith(CONFIG_DIR)) {
-                res.status(403).json({ error: 'Access denied' })
+            const configService = ConfigController.getServiceForRequest(req)
+            
+            // Re-verify the file belongs to this user before trying to read it
+            const files = await configService.getFileNames()
+            const targetFile = String(req.params.filename)
+
+            if (!files.includes(targetFile)) {
+                res.status(404).json({ error: 'File not found.' })
                 return
             }
 
-            const downloadName = req.params.filename
+            // Let the instance safely resolve the isolated absolute path 
+            // instead of doing path logic directly in the controller.
+            // @ts-ignore - Assuming getSafePath is exposed or we handle download stream
+            const filePath = configService['getSafePath'](targetFile) 
 
-            res.download(filePath, downloadName, err => {
-                if (err) {
-                    console.error('Error downloading file: ', err)
-                    res.status(500).send('Could not download the file.')
+            res.download(filePath, targetFile, (err) => {
+                if (err && !res.headersSent) {
+                    next(err)
                 }
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    // POST /api/v1/configs/folder
+    static async createFolder(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            if (!req.body || !req.body.userId) {
+                res.status(400).json({ error: 'Request body must contain a userId.' })
+                return
+            }
+
+            const configService = ConfigController.getServiceForRequest(req)
+            const newFolder = await configService.makeFolder()
+            
+            res.status(201).json({
+                folderName: newFolder.folderName,
             })
         } catch (error) {
             next(error)

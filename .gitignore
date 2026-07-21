@@ -1,5 +1,6 @@
 # Backend
 backend/node_modules/
+backend/.env
 
 # Game
 game/node_modules/

@@ -5,7 +5,7 @@
                 <i class="pi pi-shield text-primary"></i>
                 <span>&copy; {{ currentYear }} Slot Config Studio. All rights reserved.</span>
             </div>
-            <div class="flex align-items-center gap-2">
+            <div v-if="authStore.isAuthenticated" class="flex align-items-center gap-2">
                 <Tag severity="info" class="font-mono text-xs">
                     <i class="pi pi-server mr-1"></i> http://localhost:5173
                 </Tag>
@@ -29,8 +29,11 @@
 <script setup>
     import { computed } from 'vue'
     import { useSlotConfigStore } from '@/stores/slotConfigStore'
+    import { useAuthStore } from '@/stores/authStore.ts'
 
+    const authStore = useAuthStore()
     const slotConfigStore = useSlotConfigStore()
+
     const currentYear = computed(() => new Date().getFullYear())
     const selectedVersion = computed(() => slotConfigStore.currentConfigFile)
     const isConfigLoaded = computed(() => !!selectedVersion.value)

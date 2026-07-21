@@ -1,27 +1,55 @@
-import { ref, computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { defineStore } from 'pinia'
-import { useConfig } from '@/composables/useConfig'
-
+import { useApi } from '@/composables/useApi'
+import { useUserStore } from './userStore'
 
 export const useSlotConfigStore = defineStore('slotConfig', () => {
-
-  const { fetchConfig } = useConfig()
+  const userStore = useUserStore()
+  const { get } = useApi()
 
   const currentUsedVersion = ref<string | null>(null)
   const configVersions = ref<[]>([])
 
-  const currentConfigFile = computed(() => currentUsedVersion.value ? currentUsedVersion.value : 'Default')
+  // Watch specifically for changes to userStore.getUser?.id
+  watch(
+    () => userStore.getUser?.id,
+    async (newId) => {
+      if (newId) {
+        await getConfigVersions()
+      }
+    },
+    { immediate: true } // Runs immediately on store creation if user ID already exists
+  )
+
+  const currentConfigFile = computed(() => 
+    currentUsedVersion.value ? currentUsedVersion.value : 'Default'
+  )
+
   const currentConfigFiles = computed(() => {
     if (configVersions.value.length > 0) {
-      return configVersions.value.map((file: { name: string }, index) => {
-        return { name: file.name, code: `v${index + 1}` }
-      })
+      return configVersions.value.map((file: { name: string }, index) => ({
+        name: file.name,
+        code: `v${index + 1}`
+      }))
     }
+    return []
   })
 
-  const setConfigVersion = (value: null) => currentUsedVersion.value = value
+  const setConfigVersion = (value: string | null) => currentUsedVersion.value = value
 
-  const getConfigVersions = async () => configVersions.value = await fetchConfig('files')
+  const getConfigVersions = async () => {
+    const userId = userStore.getUser?.id
+    if (!userId) return
 
-  return { currentConfigFiles, currentConfigFile, setConfigVersion, getConfigVersions }
+    // Build the query string dynamically with the current user ID
+    const queryString = new URLSearchParams({ id: String(userId) }).toString()
+    configVersions.value = await get(`configs/files?${queryString}`)
+  } 
+
+  return { 
+    currentConfigFiles, 
+    currentConfigFile, 
+    setConfigVersion, 
+    getConfigVersions 
+  }
 })

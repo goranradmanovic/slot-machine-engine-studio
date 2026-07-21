@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
     import { ref, watch, toRaw } from 'vue';
-    import { useConfig } from '@/composables/useConfig'
+    import { useApi } from '@/composables/useApi.ts'
     import ReelLayout from './settings/ReelLayout.vue'
     import TimingsAndBetting from './settings/TimingsAndBetting.vue'
     import BonusFeature from './settings/BonusFeature.vue'
@@ -53,16 +53,16 @@
 
     const emit = defineEmits(['update:config'])
 
-    const { loading } = useConfig()
+    const { loading } = useApi()
 
     // Default config values
-    const config = ref(defaultConfig);
+    const config = ref(defaultConfig)
 
     watch(() => props.currentConfig, (newConfig) => {
         if (newConfig && Object.keys(newConfig).length > 0) {
             // toRaw strips the Vue proxy layer, allowing structuredClone to work perfectly
             const rawObj = toRaw(newConfig);
-            config.value = structuredClone(rawObj);
+            config.value = structuredClone(rawObj)
         }
     }, { immediate: true, deep: true });
 

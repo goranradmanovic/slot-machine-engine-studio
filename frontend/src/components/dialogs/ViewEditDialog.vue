@@ -2,7 +2,7 @@
     <Dialog v-model:visible="visible" modal :style="{ 'min-width': '55rem' }" :closable="false" :header="dialogHeaderText">
         <div class="flex items-center justify-content-center">
             <div class="raw-json-editor w-full">
-                <JsonEditorVue v-model="configData" :mode="'text'" :main-menu-bar="true" :readOnly="!props.isEdit"/>
+                <JsonEditorVue v-model="data" :mode="'text'" :main-menu-bar="true" :readOnly="!props.isEdit"/>
             </div>
         </div>
         <template #footer>
@@ -24,9 +24,10 @@
 </template>
 
 <script setup lang="ts">
-    import { watch, toRaw, computed } from "vue"
-    import { useConfig } from '@/composables/useConfig'
+    import { ref, watch, toRaw, computed } from "vue"
+    import { useApi } from '@/composables/useApi'
     import { useToast } from 'primevue/usetoast'
+    import { useUserStore } from "@/stores/userStore";
     import JsonEditorVue from 'json-editor-vue'
 
     const props = defineProps<{
@@ -38,20 +39,26 @@
         (e: 'edited'): void
     }>()
 
-    const { configData, loading, error, fetchConfig } = useConfig()
+    const { loading, get, patch } = useApi()
     const toast = useToast()
+    const userStore = useUserStore()
+
+    const userId = userStore.getUser?.id
+    const qeuryString = new URLSearchParams({ id: String(userId) }).toString()
+
     const visible = defineModel<boolean>('visible', {
         type: Boolean,
         required: true,
         default: false
     })
 
+    const data = ref<{} | null>(null)
+
     watch(
         visible,
         async (open) => {
             if (!open) return
-
-            await fetchConfig(`files/${props.filename}`)
+            data.value = await get(`configs/files/${props.filename}?${qeuryString}`)
         }
     )
 
@@ -63,7 +70,7 @@
 
     const editConfig = async () => {
         // Strip Vue proxies to ensure it doesn't lock up UI reactivity
-        let payload = toRaw(configData.value)
+        let payload = toRaw(data.value)
 
         // Handle string formats (from raw JSON editor) vs object formats cleanly
         if (typeof payload === 'string') {
@@ -72,18 +79,15 @@
             payload = structuredClone(payload)
         }
 
-        await fetchConfig(`files/${props.filename}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
+        try {
+            await patch(`configs/files/${props.filename}`, { id: userId, data: payload })
 
-        if (error.value) {
-           return toast.add({ severity: 'error', summary: 'Error', detail: `Failed to edit file ${props.filename}.`, life: 4000 })
+            toast.add({ severity: 'success', summary: 'Success', detail: `File ${props.filename} edited successfully.`, life: 4000 })
+            emits('edited')
+        } catch (err) {
+            toast.add({ severity: 'error', summary: 'Error', detail: `Failed to edit file ${props.filename}.`, life: 4000 })
+        } finally {
+            closeDialog()
         }
-
-        toast.add({ severity: 'success', summary: 'Success', detail: `File ${props.filename} edited successfully.`, life: 4000 })
-        emits('edited')
-        closeDialog()
     }
 </script>

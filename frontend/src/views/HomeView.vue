@@ -1,7 +1,7 @@
 <template>
-  <div class="home p-2">
+  <div class="home">
     <Splitter class="w-full" >
-      <SplitterPanel class="flex items-center justify-center p-3" :size="22" :minSize="5">
+      <SplitterPanel class="flex items-center justify-center p-3" :size="20" :minSize="5">
           <div class="flex flex-column gap-4">
             <div>
               <h2 class="text-2xl font-bold">Slot Config Tool</h2>
@@ -14,7 +14,7 @@
             <AvailableVersions @load-config="handleLoadConfig" />
           </div>
       </SplitterPanel>
-      <SplitterPanel class="flex items-center justify-center p-3" :size="79">
+      <SplitterPanel class="flex items-center justify-center p-3" :size="80">
         <div class="flex flex-column gap-4 w-full">
           <div>
             <h2 class="text-2xl font-bold">Game Frame</h2>

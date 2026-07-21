@@ -14,8 +14,9 @@
 </template>
 
 <script setup lang="ts">
-    import { useConfig } from '@/composables/useConfig'
+    import { useApi } from '@/composables/useApi'
     import { useToast } from 'primevue/usetoast'
+    import { useUserStore } from '@/stores/userStore'
     
     const props = defineProps<{
         filename: string
@@ -25,8 +26,12 @@
         (e: 'deleted'): void
     }>()
 
-    const { loading, error, fetchConfig } = useConfig()
+    const { loading } = useApi()
     const toast = useToast()
+    const userStore = useUserStore()
+
+    const userId = userStore.getUser?.id
+    const qeuryString = new URLSearchParams({ id: String(userId) }).toString()
 
     const visible = defineModel<boolean>('visible', {
         type: Boolean,
@@ -39,17 +44,15 @@
     }
 
     const deleteFile = async () => {
-        await fetchConfig(`files/${props.filename}`, {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-        })
+        try {
+            await useApi().delete(`configs/files/${props.filename}?${qeuryString}`)
 
-        if (error.value) {
-            return toast.add({ severity: 'error', summary: 'Error', detail: `Failed to delete file ${props.filename}.`, life: 4000 })
+            toast.add({ severity: 'success', summary: 'Success', detail: `File ${props.filename} deleted successfully.`, life: 4000 })
+            emits('deleted')
+        } catch (err) {
+            toast.add({ severity: 'error', summary: 'Error', detail: `Failed to delete file ${props.filename}.`, life: 4000 })
+        } finally {
+            closeDialog()
         }
-
-        toast.add({ severity: 'success', summary: 'Success', detail: `File ${props.filename} deleted successfully.`, life: 4000 })
-        closeDialog()
-        emits('deleted')
     }
 </script>

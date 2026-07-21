@@ -17,6 +17,7 @@
             stripedRows
             tableStyle="min-width: 50rem"
             class="files_table"
+            removableSort
         >
             <template #header>
                 <div class="flex gap-2 align-items-center justify-content-between w-full pb-4">
@@ -39,50 +40,50 @@
             </template>
             <template #empty>No Config files found.</template>
 
-            <Column field="name" header="Name"/>
-            <Column field="path" header="File Path" #body="slotProps">
+            <Column field="name" header="Name" sortable />
+            <Column field="path" header="File Path" #body="slotProps" sortable>
                 <div class="flex align-items-center gap-1">
                     <FolderOpen color="gold" />
-                    <span class="files_path">{{ formatPath(slotProps.data.path) }}</span>
+                    <span class="files_path" :title="slotProps.data.path">{{ slotProps.data.path }}</span>
                 </div>
             </Column>
-            <Column field="extension" header="Extension" #body="slotProps">
+            <Column field="extension" header="Extension" #body="slotProps" sortable>
                 <div class="flex align-items-center gap-1">
                     <File color="lime" />
                     {{ slotProps.data.extension }}
                 </div>
             </Column>
-            <Column field="sizeInBytes" header="Size" #body="slotProps">
+            <Column field="sizeInBytes" header="Size" #body="slotProps" sortable>
                 <div class="flex align-items-center gap-1">
                     <Database color="khaki" />
                     {{ formatSize(slotProps.data.sizeInBytes) }}
                 </div>
             </Column>
-            <Column field="isFile" header="Is File" #body="slotProps">
+            <Column field="isFile" header="Is File" #body="slotProps" sortable>
                 <div class="flex align-items-center gap-1">
                     <File color="lime" />
                     {{ slotProps.data.isFile ? 'Yes' : 'No' }}
                 </div>
             </Column>
-            <Column field="isDirectory" header="Is Directory" #body="slotProps">
+            <Column field="isDirectory" header="Is Directory" #body="slotProps" sortable>
                 <div class="flex align-items-center gap-1">
                     <Folder color="gold" />
                     {{ slotProps.data.isDirectory ? 'Yes' : 'No' }}
                 </div>
             </Column>
-            <Column field="createdAt" header="Created At" #body="slotProps">
+            <Column field="createdAt" header="Created At" #body="slotProps" sortable>
                 <div class="flex align-items-center gap-1">
                     <FilePlus color="green" />
                     {{ formatDate(slotProps.data.createdAt) }}
                 </div>
             </Column>
-            <Column field="updatedAt" header="Updated At" #body="slotProps">
+            <Column field="updatedAt" header="Updated At" #body="slotProps" sortable>
                 <div class="flex align-items-center gap-1">
                     <FileEdit color="orange" />
                     {{ formatDate(slotProps.data.updatedAt) }}
                 </div>
             </Column>
-            <Column field="lastAccessedAt" header="Last Accessed At" #body="slotProps">
+            <Column field="lastAccessedAt" header="Last Accessed At" #body="slotProps" sortable>
                 <div class="flex align-items-center gap-1">
                     <FileCheck color="steelblue" />
                     {{ formatDate(slotProps.data.lastAccessedAt) }}
@@ -109,13 +110,18 @@
     import { ref, onMounted, computed } from 'vue'
     import { FilterMatchMode } from '@primevue/core/api'
     import { defaultConfig } from '@/utils/default-config.ts'
-    import { useConfig } from '@/composables/useConfig'
+    import { useApi } from '@/composables/useApi'
+    import { useUserStore } from '@/stores/userStore'
     import { useToast } from 'primevue/usetoast'
     import ViewEditDialog from '@/components/dialogs/ViewEditDialog.vue'
     import DeleteFileDialog from '@/components/dialogs/DeleteFileDialog.vue'
 
-    const { configData, loading, error, fetchConfig } = useConfig()
+    const { loading, error, post, get } = useApi()
     const toast = useToast()
+    const userStore = useUserStore()
+
+    const userId = userStore.getUser?.id
+    const qeuryString = new URLSearchParams({ id: String(userId) }).toString()
 
     const filters = ref({
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -157,9 +163,10 @@
     }
 
     const downloadingFile = ref<string | null>(null)
+    const configFiles = ref<{}[]>([])
 
-    const files = computed(() => configData.value ?? [])
-    const totalFiles = computed(() => configData.value ? configData.value.length : 0)
+    const files = computed(() => configFiles.value ?? [])
+    const totalFiles = computed(() => configFiles.value ? configFiles.value.length : 0)
     const newFile = computed(() => `reels_v${totalFiles.value + 1}.json`)
 
     const formatDate = (value?: string) => value ? Temporal.Instant.from(value).toLocaleString() : 'N/A'
@@ -178,15 +185,10 @@
         return `${size.toFixed(2)} ${units[unitIndex]}`
     }
 
-    const formatPath = (path: string) => {
-        const parts = path.split('\\')
-        return parts.length > 2 ? `.../${parts.slice(-2).join('/')}` : path
-    }
-
     // Get initial all files from config folder
     const getConfigFiles = async () => {
         try {
-            await fetchConfig('files')
+            configFiles.value = await get(`configs/files?${qeuryString}`)
             if (error.value) throw new Error('Could not find or read config files')
             toast.add({ severity: 'success', summary: 'Success', detail: 'Config Files Metadata loaded.', life: 4000 })
         } catch (err) {
@@ -198,11 +200,7 @@
     // Create config file
     const createConfig = async () => {
         try {
-            await fetchConfig('files', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(defaultConfig)
-            })
+            await post('configs/files', { id: userId, data:defaultConfig })
 
             if (error.value) throw new Error('Server rejected creating new config')
             await getConfigFiles()
@@ -215,7 +213,7 @@
     // Delete config file
     const handleDeleteConfigFile = () => {
         // Remove the deleted file from the configData array localy so that the table updates without needing to refetch the data from the server
-        configData.value = configData.value.filter(file => file.name !== deleteDialog.value.filename)
+        configFiles.value = configFiles.value.filter(file => file.name !== deleteDialog.value.filename)
     }
 
     // Download config file
@@ -226,7 +224,7 @@
 
             downloadingFile.value = filename
 
-            const response = await fetchConfig(`files/download/${filename}`)
+            const response = await get(`configs/files/download/${filename}?${qeuryString}`)
             
             if (error.value) throw new Error('Could not download config file')
 
