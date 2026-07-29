@@ -5,6 +5,9 @@ import type { LoginResponseDto } from "@/dto/auth/LoginResponseDto"
 import type { RegisterDto } from "@/dto/auth/RegisterDto"
 import type { ForgotPasswordDto } from '@/dto/auth/ForgotPasswordDto'
 import type { ResetPasswordDto } from '@/dto/auth/ResetPasswordDto'
+import type { ChangePasswordDto } from '@/dto/auth/ChangePasswordDto'
+import type { ApiResponseDto } from '@/dto/common/ApiResponseDto'
+import type { AuthUserDto } from '@/dto/auth/AuthUserDto'
 
 export class AuthService {
 
@@ -25,10 +28,13 @@ export class AuthService {
 
     // Logout
     static async logout(): Promise<void> {
+        const refreshToken = Auth.getRefreshToken()
         try {
-            await apiClient.post('auth/logout', { refreshToken: Auth.getRefreshToken() })
-        }
-        finally {
+            if (refreshToken) {
+                await apiClient.post<void>('auth/logout', { refreshToken })
+            }
+        } finally {
+            // Always remove local authentication
             Auth.clear()
         }
     }
@@ -45,6 +51,17 @@ export class AuthService {
         return response
     }
 
+    // Reset password
+    static async changePassword(dto: ChangePasswordDto): Promise<void> {
+        const response = await apiClient.put('auth/change-password', dto)
+        return response
+    }
+
+    static async me(id: number): Promise<AuthUserDto> {
+        const response = await apiClient.get<ApiResponseDto<AuthUserDto>>(`auth/me?id=${id}`)
+        return response.data
+    }
+
     // Refresh Access Token
     static async refresh(): Promise<void> {
         const refreshToken = Auth.getRefreshToken()
@@ -53,12 +70,15 @@ export class AuthService {
 
         const response = await apiClient.post<{ accessToken: string}>('auth/refresh', { refreshToken })
 
-        console.log('REFRESH ACCESS TOKEN REPONSE - ', response)
         Auth.setAccessToken(response?.data?.accessToken)
     }
 
     // Local authenticate check
     static isAuthenticated(): boolean {
-        return !!Auth.getAccessToken()
+        return !!(Auth.getAccessToken() && Auth.getRefreshToken())
+    }
+
+    static sessionExpired(): void {
+        Auth.clear()
     }
 }

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
 import { ApiResponse } from '../../../utils/api-response.ts'
 import { AuthService } from '../../../services/auth.service.ts'
-import type { RegisterDto, LoginDto, ResetPasswordDto, ChangePasswordDto } from '../../../types/auth.types.ts'
+import type { RegisterDto, LoginDto, ResetPasswordDto, ChangePasswordDto, UpdateFirstLastNameDto } from '../../../types/auth.types.ts'
 import type { ForgotPasswordDto } from '../../../types/auth.types.ts'
 import { getRefreshCookieOptions } from '../../../utils/cookies.ts'
 import { appConfig } from '../../../config/app.config.ts'
@@ -32,7 +32,7 @@ export class AuthController {
     }
 
     static async refresh(req: Request, res: Response): Promise<void> {
-        const refreshToken = req.cookies[appConfig.cookieName]
+        const refreshToken = req.body?.refreshToken || req.cookies[appConfig.cookieName]
 
         if (!refreshToken) throw new ApiError(401, 'Refresh token missing.')
 
@@ -46,7 +46,8 @@ export class AuthController {
     }
 
     static async me(req: Request, res: Response): Promise<void> {
-        const user = await UserService.me(req.user!.sub)
+        const userId = Number(req.query?.id)
+        const user = await UserService.me(userId)
 
         res.json(
             new ApiResponse(true, 'Current user.', user)
@@ -54,7 +55,7 @@ export class AuthController {
     }
 
     static async logout(req: Request, res: Response): Promise<void> {
-        const refreshToken = req.cookies[appConfig.cookieName]
+        const refreshToken = req.body?.refreshToken || req.cookies[appConfig.cookieName]
 
         if (refreshToken) {
             await SessionService.logout(refreshToken)
@@ -108,7 +109,7 @@ export class AuthController {
 
         if (dto.newPassword !== dto.confirmPassword) throw new ApiError(400, 'Password do not match')
         
-        const userId = Number(req.user?.sid)
+        const userId = Number(req.body?.id)
 
         await PasswordService.changePassword(userId, dto.currentPassword, dto.newPassword)
 

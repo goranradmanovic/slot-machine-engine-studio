@@ -39,8 +39,8 @@
                 </template>
 
                 <Button
-                    @click="toggleDarkMode" 
-                    :icon="isDark ? 'pi pi-moon' : 'pi pi-sun'"  
+                    @click="themeStore.toggleDarkMode" 
+                    :icon="themeStore.isDarkTheme ? 'pi pi-moon' : 'pi pi-sun'"  
                     aria-label="Toggle Dark Mode"  
                     variant="text" 
                 />
@@ -50,20 +50,20 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, onMounted, computed } from 'vue';
+    import { computed } from 'vue';
     import { RouterLink } from 'vue-router'
     import { useSlotConfigStore } from '@/stores/slotConfigStore'
     import { useAuthStore } from '@/stores/authStore.ts'
     import { useGameStore } from '@/stores/gameStore'
+    import { useThemeStore } from '@/stores/themeStore.ts'
     import { useRoute } from 'vue-router'
     import ProfileMenu from './ProfileMenu.vue'
 
     const route = useRoute()
     const gameStore = useGameStore()
+    const themeStore = useThemeStore()
     const slotConfigStore = useSlotConfigStore()
     const authStore = useAuthStore()
-
-    const isDark = ref(false)
 
     const isHomeRoute = computed(() => route.name === 'home')
 
@@ -84,31 +84,7 @@
         return items
     })
 
-    const toggleDarkMode = () => {
-        isDark.value = !isDark.value
-
-        if (isDark.value) {
-            document.documentElement.classList.add('p-dark')
-            localStorage.setItem('theme', 'dark')
-        } else {
-            document.documentElement.classList.remove('p-dark')
-            localStorage.setItem('theme', 'light')
-        }
-    }
-
     const startGame = () => {
         gameStore.gameFrameRef.value?.contentWindow?.postMessage({ type: 'START_GAME' }, '*')
     }
-
-    const savedTheme = () => {
-        // Check for saved theme in localStorage on load
-        if (localStorage.getItem('theme') === 'dark') {
-            isDark.value = true;
-            document.documentElement.classList.add('p-dark');
-        }
-    }
-
-    onMounted(() => {
-        savedTheme()
-    })
 </script>

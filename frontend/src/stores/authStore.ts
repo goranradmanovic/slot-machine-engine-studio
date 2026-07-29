@@ -7,6 +7,6 @@ export const useAuthStore = defineStore('auth', () => {
     const isAuthenticated = computed(() => authenticated.value)
 
     const setAuthenticated = (val: boolean) => authenticated.value = val
-
+    
     return { authenticated, isAuthenticated, setAuthenticated }
 }, { persist: true })

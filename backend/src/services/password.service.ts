@@ -28,7 +28,6 @@ export class PasswordService {
     }
 
     static async changePassword(userId: number, currentPassword: string, newPassword: string): Promise<void> {
-
         const user = await UserRepository.findById(userId)
 
         if (!user) throw new ApiError(404, 'User not found.')

@@ -114,3 +114,7 @@ Default URL: http://localhost:9000
 ![Forgot Password Form](./screenshots/13.png "Forgot Password Form")
 ![Reset Password Form](./screenshots/14.png "Reset Password Form")
 ![User popup](./screenshots/15.png "User popup")
+![Account info](./screenshots/16.png "Account info")
+![Account update](./screenshots/17.png "Account update")
+![Account security](./screenshots/16.png "Account security")
+![Account preferences](./screenshots/16.png "Account prefrences")

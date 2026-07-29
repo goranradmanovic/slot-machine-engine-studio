@@ -99,7 +99,7 @@ export class Game {
             if (event.origin !== TRUSTED_ORIGIN) return; 
 
             if (event.data?.type === 'LOAD_CONFIG') {
-                this.socket.emit('request-config', event.data.version); // v1, v2, etc.
+                this.socket.emit('request-config', event.data.version, event.data.id); // v1, v2, etc. | id = 1
                 console.log('Data received from parent:', event.data);
             }
         });

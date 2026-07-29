@@ -16,19 +16,7 @@ export const registerSchema: ValidationSchema = {
         required: true,
         minLength: 8,
         maxLength: 100
-    },
-
-    /*firstName: {
-        required: true,
-        minLength: 3,
-        maxLength: 30
-    },
-
-    lastName: {
-        required: true,
-        minLength: 3,
-        maxLength: 30
-    }*/
+    }
 }
 
 export const loginSchema: ValidationSchema = {
@@ -48,19 +36,19 @@ export const loginSchema: ValidationSchema = {
 }
 
 export const changePasswordSchema = {
-    oldPassword: {
-        required: true,
-        minLength: 8
-    },
-    
     newPassword: {
         required: true,
         minLength: 8
     },
 
     confirmPassword: {
-        required: true,
+        required: false,
         equals: 'newPassword'
+    },
+
+    currentPassword: {
+        required: true,
+        minLength: 8
     }
 }
 
@@ -84,5 +72,19 @@ export const resetPasswordSchema = {
     confirmPassword: {
         required: true,
         equals: 'password'
+    }
+}
+
+export const updateFirstLastNameSchema = {
+    firstName: {
+        required: true,
+        minLength: 3,
+        maxLength: 30
+    },
+
+    lastName: {
+        required: true,
+        minLength: 3,
+        maxLength: 30
     }
 }

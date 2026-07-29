@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue'
-import { apiClient } from '@/api/ApiClient.ts'
+import { apiClient } from '@/api/ApiClient'
 
 export function useApi() {
     const activeRequests = ref<number>(0)

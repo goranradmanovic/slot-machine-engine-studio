@@ -77,9 +77,31 @@ class ApiClient {
             headers.set('Authorization', `Bearer ${token}`)
         }
 
-        const response = await fetch(`${this.apiUrl}/${endpoint}`, { ...options, headers })
+        const response = await fetch(
+            `${this.apiUrl}/${endpoint}`,
+            {
+                ...options,
+                headers
+            }
+        )
+
+        // Parse JSON ONLY ONCE
+        let body: any = null
+
+        if (response.status !== 204) {
+            const contentType = response.headers.get('content-type')
+
+            if (contentType?.includes('application/json')) {
+                body = await response.json()
+            }
+        }
 
         if (response.status === 401 && retry) {
+
+            if (!Auth.getRefreshToken()) {
+                throw new Error(body?.message ?? 'Unauthorized')
+            }
+
             const refreshed = await this.refreshToken()
 
             if (refreshed) {
@@ -92,32 +114,23 @@ class ApiClient {
                 )
             }
 
-            this.userError(response) // Throw an error if user put wrong email/password
-            
             Auth.clear()
 
-            window.location.href = '/login'
-
-            throw new Error('Session expired.')
+            throw new Error(body?.message ?? 'Session expired.')
         }
 
-        this.userError(response) // Throw an error if user put wrong email/password
-
-        // No content
-        if (response.status === 204) {
-            return undefined as T
+        if (!response.ok) {
+            throw new Error(body?.message ?? response.statusText)
         }
 
-        return await response.json()
+        return body as T
     }
 
     private async refreshToken(): Promise<boolean> {
 
         const refreshToken = Auth.getRefreshToken()
 
-        if (!refreshToken) {
-            return false
-        }
+        if (!refreshToken) return false
 
         const response = await fetch(
             `${this.apiUrl}/auth/refresh`,
@@ -134,24 +147,9 @@ class ApiClient {
 
         const json = await response.json()
 
-        Auth.setAccessToken(json.data.accessToken)
+        Auth.setTokens(json.data.accessToken, json.data.refreshToken)
 
         return true
-    }
-
-    // Helper function
-    private async userError(res: {} | any): Promise<void> {
-        if (!res.ok) {
-            let message = res.statusText
-
-            try {
-                const json = await res.json()
-                message = json.message ?? message
-            }
-            catch {}
-
-            throw new Error(message)
-        }
     }
 }
 

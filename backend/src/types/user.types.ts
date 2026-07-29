@@ -22,6 +22,8 @@ export interface TokenPayload {
 export interface UserResponseDto {
     id: number;
     username: string;
+    firstName: string;
+    lastName: string;
     email: string;
     permissions: UserPermission;
     createdAt: string;
@@ -29,4 +31,9 @@ export interface UserResponseDto {
 
 export interface UpdateUserPermissionsDto {
     permissions: Permission[]
+}
+
+export interface UpdateFirstLastNameDto {
+    firstName: string;
+    lastName: string;
 }

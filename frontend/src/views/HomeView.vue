@@ -34,8 +34,10 @@
   import { useToast } from 'primevue/usetoast'
   import AvailableVersions from '@/components/AvailableVersions.vue'
   import { useGameStore } from '@/stores/gameStore'
+  import { useUserStore } from '@/stores/userStore'
 
   const gameStore = useGameStore()
+  const userStore = useUserStore()
   const toast = useToast()
   const gameFrame = ref<HTMLIFrameElement | null>(null)
 
@@ -45,7 +47,8 @@
     gameFrame.value?.contentWindow?.postMessage(
       {
         type: 'LOAD_CONFIG',
-        version: selectedVersion
+        version: selectedVersion,
+        id: userStore.getUser?.id
       },
       '*'
     )

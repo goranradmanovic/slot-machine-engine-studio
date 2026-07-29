@@ -44,9 +44,9 @@ export interface ResetPasswordDto {
 }
 
 export interface ChangePasswordDto {
-    currentPassword: string;
-    newPassword: string;
     confirmPassword: string;
+    newPassword: string;
+    currentPassword: string;
 }
 
 export interface AuthenticatedRequest extends Request {

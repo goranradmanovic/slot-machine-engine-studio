@@ -112,8 +112,8 @@ export class ConfigController {
     // POST /api/v1/configs/folder
     static async createFolder(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            if (!req.body || !req.body.userId) {
-                res.status(400).json({ error: 'Request body must contain a userId.' })
+            if (!req.body || !req.body.id) {
+                res.status(400).json({ error: 'Request body must contain a user Id.' })
                 return
             }
 

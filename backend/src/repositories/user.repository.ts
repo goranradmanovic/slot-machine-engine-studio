@@ -47,9 +47,9 @@ export class UserRepository {
 
         await db.run(
             'UPDATE users SET firstName = ?, lastName = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?',
-            id,
             firstName,
-            lastName   
+            lastName,
+            id  
         )
     }
 
@@ -58,18 +58,18 @@ export class UserRepository {
 
         await db.run(
             'UPDATE users SET password = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?',
-            id,
-            password,   
+            password,
+            id
         )
     }
 
-    static async updatePermissions(userId: number, permissions: Permission[]): Promise<void> {
+    static async updatePermissions(id: number, permissions: Permission[]): Promise<void> {
         const db = getDatabase()
 
         await db.run(
             'UPDATE users SET permissions = ?, updateAt = CURRENT_TIMESTAMP WHERE id = ?',
             stringifyPermissions(permissions),
-            userId
+            id
         )
     }
 

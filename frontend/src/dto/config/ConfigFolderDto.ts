@@ -1,3 +1,3 @@
 export interface ConfigFolderDto {
-    userId: number;
+    id: number;
 }

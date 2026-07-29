@@ -16,6 +16,7 @@ router.get('/:id/permissions', authenticate, authorize(Permission.USER_READ), as
 // PUT /api/users/5/permissions -> { "permissions": ["game.read","game.write","config.read","config.write","asset.read"] }
 router.put('/:id/permissions', authenticate, authorize(Permission.USER_WRITE), asyncHandler(UserController.updatePermissions))
 
-router.put('/:id/user', authenticate, authorize(Permission.USER_WRITE), asyncHandler(UserController.updateUserFullName))
+// PUT /api/users/1/user
+router.put('/:id/user', authenticate, asyncHandler(UserController.updateUserFullName))
 
 export default router

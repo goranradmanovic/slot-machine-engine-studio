@@ -1,8 +1,9 @@
 import type { Request, Response } from 'express'
 import { Permission } from '../../../enums/permission.enum.ts'
 import { UserService } from '../../../services/user.service.ts'
-import type { UpdateUserPermissionsDto } from '../../../types/user.types.ts'
+import type { UpdateUserPermissionsDto, UpdateFirstLastNameDto } from '../../../types/user.types.ts'
 import { ApiResponse } from '../../../utils/api-response.ts'
+import { ApiError } from '../../../utils/api-error.ts'
 
 export class UserController {
 
@@ -34,12 +35,14 @@ export class UserController {
         )
     }
 
-    static async updateUserFullName(req: Request, res: Response): Promise<void>  {
-        const userId = Number(req.body.id)
-        const firstName = String(req.body.firstName)
-        const lastName = String(req.body.lastName)
+    static async updateUserFullName(req: Request, res: Response): Promise<void> {
+        const dto = req.body as UpdateFirstLastNameDto
 
-        const user = await UserService.updateUserFullName(userId, firstName, lastName)
+        if (dto.firstName === '' || dto.lastName === '') throw new ApiError(400, 'First name and Last name are required.')
+        
+        const userId = Number(req.body.id)
+
+        const user = await UserService.updateUserFullName(userId, dto.firstName, dto.lastName)
 
         res.json(
             new ApiResponse(true, 'User full name updated.', user)

@@ -26,8 +26,14 @@ import {
     Inbox,
     SignOut,
     Bars,
-    User
+    User,
+    CreditCard,
+    UserEdit,
+    Key,
+    Envelope,
+    CalendarClock
 } from '@primeicons/vue'
+
 
 import InputColor from 'primevue/inputcolor'
 import InputColorArea from 'primevue/inputcolorarea'
@@ -99,10 +105,12 @@ app.component('EyeDropper', EyeDropper)
 app.component('Cog', Cog)
 app.component('Inbox', Inbox)
 app.component('SignOut', SignOut)
-app.component('Bars', Bars),
+app.component('Bars', Bars)
 app.component('User', User)
-
-
-
+app.component('CreditCard', CreditCard)
+app.component('UserEdit', UserEdit)
+app.component('Key', Key)
+app.component('Envelope', Envelope)
+app.component('CalendarClock', CalendarClock)
 
 app.mount('#app')

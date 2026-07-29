@@ -38,16 +38,17 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents>(httpServer, {
 io.on('connection', socket => {
     console.log('Client connected')
 
-    socket.on('request-config', async (version: string | unknown) => {
+    socket.on('request-config', async (version: string | unknown, id: number | unknown) => {
         console.log('Client requested config')
         const filename = version
+        const userFolder = `config-${id}`
 
         if (!filename) {
             socket.emit('config-error', { message: 'Config not found' })
             return
         }
 
-        const filePath = path.join(__dirname, 'configs', filename)
+        const filePath = path.join(__dirname, `slot_configs\\${userFolder}`, filename)
         const config = JSON.parse(await fs.readFile(filePath, 'utf-8')) as SlotMachineConfig
 
         socket.emit('config-response', config)

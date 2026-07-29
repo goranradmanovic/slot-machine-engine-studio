@@ -16,22 +16,6 @@
                     </Message>
                 </FormField>
 
-                <!--<FormField name="firstName" class="flex flex-column gap-1" v-slot="$field">
-                    <label for="firstName" class="font-medium">First Name</label>
-                    <InputText id="fistName" type="text" placeholder="First Name" fluid />
-                    <Message v-if="$field?.error" severity="error" variant="simple" size="small">
-                        {{ $field.error.message }}
-                    </Message>
-                </FormField>
-
-                <FormField name="lastName" class="flex flex-column gap-1" v-slot="$field">
-                    <label for="lastName" class="font-medium">Last Name</label>
-                    <InputText id="lastName" type="text" placeholder="Last Name" fluid />
-                    <Message v-if="$field?.error" severity="error" variant="simple" size="small">
-                        {{ $field.error.message }}
-                    </Message>
-                </FormField>-->
-
                 <FormField name="email" class="flex flex-column gap-1" v-slot="$field">
                     <label for="email" class="font-medium">Email Address</label>
                     <InputText id="email" type="text" placeholder="Email" fluid />
@@ -84,8 +68,6 @@
     // Define the initial state of the registration form
     const initialValues = ref<RegisterFormValues>({
         username: '',
-        //firstName: '',
-        //lastName: '',
         email: '',
         password: ''
     })
@@ -93,8 +75,6 @@
     // Define the validation rules using Zod
     const registerSchema = z.object({
         username: z.string().min(3, { message: 'Username must be at least 3 characters long.' }),
-        //firstName: z.string().min(2, { message: 'First name must be at least 2 characters long.' }),
-        //lastName: z.string().min(2, { message: 'Username must be at least 2 characters long.' }),
         email: z.email({ message: 'Please enter a valid email address.' }),
         password: z
             .string()
@@ -111,17 +91,13 @@
     // Handle form submission
     const onFormSubmit = async (e: FormSubmitEvent) => {
 
-        await execute(() => ConfigService.createConfigFolder({ userId: 1 }))
-        /*if (e.valid) {
+        if (e.valid) {
             try {
                 const response = await execute(() => AuthService.register(e.values))
 
-                const folderName = `config-${response.data.id}`
+                const userId = response.data.id
 
-                console.log('response - ', response)
-                console.log('folder name - ', { folderName })
-
-                //await execute(() => ConfigService.createConfigFolder({ folderName }))
+                await execute(() => ConfigService.createConfigFolder({ id: userId }))
 
                 toast.add({ severity: 'success', summary: 'Sign up Successful!', detail: `Welcome, ${e.values.username}!`, life: 5000 })
                 router.replace({ name: 'login' })
@@ -134,6 +110,6 @@
         } else {
             toast.add({ severity: 'error', summary: 'Sign up Failed', detail: 'Please fix the errors in the form.', life: 5000 })
             return
-        }*/
+        }
     }
 </script>

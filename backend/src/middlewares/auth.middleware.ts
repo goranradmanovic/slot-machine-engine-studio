@@ -8,19 +8,19 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     const authorization = req.headers.authorization
     
     if (!authorization) {
-        return next(new ApiError(401, 'Authorization header missing.'))
+        return next(new ApiError(401, 'Unauthorized'))
     }
         
     const [type, token] = authorization.split(' ')
 
     if (type !== 'Bearer' || !token) {
-        return next(new ApiError(401, 'Invalid authorization header.'))
+        return next(new ApiError(401, 'Unauthorized'))
     }
 
     try {
         req.user = verifyAccessToken(token)
         next()
     } catch {
-        next(new ApiError(401, 'Invalid access token.'))
+        next(new ApiError(401, 'Unauthorized'))
     }
 }
