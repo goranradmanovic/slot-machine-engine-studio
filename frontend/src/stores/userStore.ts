@@ -11,6 +11,18 @@ export const useUserStore = defineStore('user', () => {
 
     const getUser = computed(() => user.value)
 
+    const hasPermissions = (permission: string) => {
+        const userPermissions = (user.value as UserDto)?.permissions || []
+
+        // Check for Full Admin access
+        if (userPermissions.includes('admin.all')) {
+            return true
+        }
+
+        // Otherwise check for the exact permission required
+        return userPermissions.includes(permission)
+    }
+
     const setUser = (val: UserDto | null | unknown) => user.value = val
 
     const fetchUserProfile = async (id: number) => {
@@ -18,5 +30,5 @@ export const useUserStore = defineStore('user', () => {
         setUser(response)
     }
 
-    return { user, getUser, setUser, fetchUserProfile }
+    return { user, getUser, setUser, fetchUserProfile, hasPermissions }
 }, { persist: true })

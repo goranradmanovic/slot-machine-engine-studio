@@ -54,6 +54,7 @@
     import { RouterLink } from 'vue-router'
     import { useSlotConfigStore } from '@/stores/slotConfigStore'
     import { useAuthStore } from '@/stores/authStore.ts'
+    import { useUserStore } from '@/stores/userStore.ts'
     import { useGameStore } from '@/stores/gameStore'
     import { useThemeStore } from '@/stores/themeStore.ts'
     import { useRoute } from 'vue-router'
@@ -64,18 +65,24 @@
     const themeStore = useThemeStore()
     const slotConfigStore = useSlotConfigStore()
     const authStore = useAuthStore()
+    const userStore = useUserStore()
 
     const isHomeRoute = computed(() => route.name === 'home')
 
     // Dynamic Menu Items Computed Property
     const menuItems = computed(() => {
-        // Common items visible to everyone (optional)
+        if (!authStore.isAuthenticated) return []
+
         const items = []
 
-        if (authStore.isAuthenticated) {
-            // Links ONLY for Registered/Logged-in Users
+        // 1. Live Preview / Home — visible if user has 'simulation.run' OR is Admin
+        if (userStore.hasPermissions('simulation.run') || userStore.hasPermissions('config.manage')) {
+            items.push({ label: 'Live Preview', icon: 'pi pi-play', route: '/' })
+        }
+
+        // 2. Config Links — visible if user has 'config.manage' OR is Admin
+        if (userStore.hasPermissions('config.manage')) {
             items.push(
-                { label: 'Live Preview', icon: 'pi pi-play', route: '/' },
                 { label: 'Config Editor', icon: 'pi pi-cog', route: '/config-editor' },
                 { label: 'Config Files', icon: 'pi pi-table', route: '/config-files' }
             )
