@@ -58,17 +58,14 @@ Profile functionality includes:
 
 The application uses a simple three-tier permission system.
 
-```typescript
-export enum Permission {
-    // Tier 1: General Access / Runner
-    SIMULATION_RUN = 'simulation.run',
-
-    // Tier 2: Config Editor
-    CONFIG_MANAGE = 'config.manage',
-
-    // Tier 3: Full Admin
-    ADMIN_ALL = 'admin.all'
-}
+```text
+simulation.run
+      │
+      ▼
+config.manage
+      │
+      ▼
+admin.all
 ```
 
 ### Permission Levels
@@ -840,6 +837,7 @@ Email:
 goranradmanovic@gmail.com
 
 Portfolio:
+
 https://goranradmanovic.github.io/
 
 ---
