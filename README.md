@@ -61,10 +61,8 @@ The application uses a simple three-tier permission system.
 ```text
 simulation.run
       │
-      ▼
 config.manage
       │
-      ▼
 admin.all
 ```
 
