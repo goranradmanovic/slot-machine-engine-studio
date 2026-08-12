@@ -73,7 +73,7 @@ admin
 #### Tier 1 — Simulation / Runner
 
 ```text
-simulation.run
+basic
 ```
 
 Provides access to the simulation functionality and allows users to work with existing configurations.
@@ -89,7 +89,7 @@ Typical capabilities include:
 #### Tier 2 — Configuration Editor
 
 ```text
-config.manage
+manager
 ```
 
 Provides configuration-management capabilities.
@@ -107,7 +107,7 @@ Typical capabilities include:
 #### Tier 3 — Administrator
 
 ```text
-admin.all
+admin
 ```
 
 Provides full administrative access across the application.
