@@ -4,6 +4,6 @@ export interface UserDto {
     firstName: string | null;
     lastName: string | null;
     email: string;
-    permissions: string[];
+    permissions: string;
     createdAt: string;
 }

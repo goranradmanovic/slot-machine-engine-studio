@@ -53,13 +53,12 @@
           <span class="uppercase text-xs text-color-secondary font-medium">Assigned Permissions</span>
           <div class="flex gap-2">
             <Tag 
-              v-for="perm in parsedPermissions" 
-              :key="perm" 
-              :value="perm" 
-              :severity="getPermissionSeverity(perm)"
+              :value="user.permissions" 
+              :severity="getPermissionSeverity(user.permissions)"
               icon="pi pi-shield"
+              class="uppercase font-medium"
             />
-            <span v-if="parsedPermissions.length === 0" class="text-color-secondary font-italic text-sm">
+            <span v-if="!user.permissions" class="text-color-secondary font-italic text-sm">
               No permissions assigned
             </span>
           </div>
@@ -101,20 +100,6 @@
       return null
     })
 
-    // Helper to safely parse stringified permissions array
-    const parsedPermissions = computed(() => {
-      if (user.value?.permissions.length === 0) return []
-
-      try {
-        return typeof user.value?.permissions === 'string' 
-          ? JSON.parse(user.value.permissions) 
-          : user.value?.permissions
-      } catch (e) {
-        console.error("Failed to parse permissions string", e)
-        return []
-      }
-    })
-
     // Helper to format creation timestamp
     const formattedDate = computed(() => {
       if (!user.value?.createdAt) return 'N/A'
@@ -127,11 +112,17 @@
     })
 
     // Assign visual severity (colors) based on permission scope
-    const getPermissionSeverity = (perm) => {
-      if (perm.includes('write') || perm.includes('delete') || perm.includes('admin')) {
-        return 'warn'
+    const getPermissionSeverity = (perm: string) => {
+      switch (perm) {
+        case 'admin':
+          return 'success'
+        case 'manager':
+          return 'info'
+        case 'basic':
+          return 'warn'
+        default:
+          return 'warn'
       }
-      return 'info'
     }
 
     onMounted(async () => {

@@ -40,7 +40,7 @@ const router = createRouter({
       component: () => import('../views/ConfigEditorView.vue'),
       meta: { 
         requiresAuth: true, 
-        requiredPermission: 'config.manage' //Permission.CONFIG_MANAGE // Locked to Config Editors / Admins
+        requiredPermission: 'manager' //Permission.CONFIG_MANAGE // Locked to Config Editors / Admins
       }
     },
     {
@@ -49,7 +49,7 @@ const router = createRouter({
       component: () => import('../views/ConfigFilesView.vue'),
       meta: { 
         requiresAuth: true, 
-        requiredPermission: 'config.manage' // Locked to Config Editors / Admins
+        requiredPermission: 'manager' // Locked to Config Editors / Admins
       }
     },
     {
@@ -93,7 +93,7 @@ router.beforeEach((to, from) => {
   // 4. Permission Check: Prevent restricted access and avoid infinite loops
   if (to.meta.requiredPermission && isAuthenticated) {
     const required = to.meta.requiredPermission as string
-    const hasAccess = userStore.hasPermissions(required)
+    const hasAccess = userStore.hasPermissions(required) || userStore.hasPermissions('admin') // Admins have access to all routes
 
     if (!hasAccess) {
       // If user is already heading home, allow it to prevent infinite loops

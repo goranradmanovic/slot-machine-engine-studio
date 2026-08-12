@@ -75,13 +75,13 @@
 
         const items = []
 
-        // 1. Live Preview / Home — visible if user has 'simulation.run' OR is Admin
-        if (userStore.hasPermissions('simulation.run') || userStore.hasPermissions('config.manage')) {
+        // 1. Live Preview / Home — visible if user has 'basic' OR is Admin
+        if (userStore.hasPermissions('basic') || userStore.hasPermissions('manager') || userStore.hasPermissions('admin')) {
             items.push({ label: 'Live Preview', icon: 'pi pi-play', route: '/' })
         }
 
         // 2. Config Links — visible if user has 'config.manage' OR is Admin
-        if (userStore.hasPermissions('config.manage')) {
+        if (userStore.hasPermissions('manager') || userStore.hasPermissions('admin')) {
             items.push(
                 { label: 'Config Editor', icon: 'pi pi-cog', route: '/config-editor' },
                 { label: 'Config Files', icon: 'pi pi-table', route: '/config-files' }

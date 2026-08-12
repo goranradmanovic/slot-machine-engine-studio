@@ -59,11 +59,13 @@ Profile functionality includes:
 The application uses a simple three-tier permission system.
 
 ```text
-simulation.run
-      │
-config.manage
-      │
-admin.all
+basic
+  │
+  ▼
+manager
+  │
+  ▼
+admin
 ```
 
 ### Permission Levels
@@ -448,13 +450,13 @@ Permissions are checked before protected operations are performed.
 The current permission model contains three levels:
 
 ```text
-simulation.run
-      │
-      ▼
-config.manage
-      │
-      ▼
-admin.all
+basic
+  │
+  ▼
+manager
+  │
+  ▼
+admin
 ```
 
 Higher-level permissions provide broader access to the system.
@@ -688,6 +690,12 @@ Screenshots of the following areas can be added here:
 ![Account update](./screenshots/17.png "Account update")
 ![Account security](./screenshots/16.png "Account security")
 ![Account preferences](./screenshots/16.png "Account prefrences")
+
+### User Permissions
+
+![Admin](./screenshots/20.png "Admin Permission")
+![Manager](./screenshots/21.png "Manager Permission")
+![Basic](./screenshots/22.png "Bassic Permission")
 
 ### Configuration Management
 

@@ -26,7 +26,7 @@
                     <Avatar :label="avatarLabel" class="mr-2" shape="circle" />
                     <span class="flex flex-column align-items-start gap-1">
                         <span class="text-sm font-bold">{{ userFullName || userUsername }}</span>
-                        <span class="text-xs">Admin</span>
+                        <span class="uppercase text-xs">{{ userRole }}</span>
                     </span>
                 </button>
             </template>
@@ -56,6 +56,7 @@
     const userUsername = computed(() => userStore.user.username ? userStore.user.username : null)
     const avatarLabel = computed(() => userUsername.value.slice(0, 2).toLocaleUpperCase())
     const userFullName = computed(() => userStore.user.firstName ? `${userStore.user.firstName} ${userStore.user.lastName}` : null)
+    const userRole = computed(() => userStore.user.permissions ? userStore.user.permissions : 'No Role Assigned')
 
     const { error, execute } = useApi()
     const menu = ref()
