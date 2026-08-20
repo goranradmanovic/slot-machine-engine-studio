@@ -10,18 +10,17 @@
 
         <template #content>
             <Form v-slot="$form" :initialValues="initialValues" :resolver="resolver" @submit="onFormSubmit" class="flex flex-column gap-4 w-full max-w-sm">
-
                 <FormField name="firstName" class="flex flex-column gap-1" v-slot="$field">
-                    <label for="firstName" class="font-medium">First Name</label>
-                    <InputText id="fistName" type="text" placeholder="First Name" fluid />
+                    <label for="firstname" class="font-medium">First Name</label>
+                    <InputText id="firstname" type="text" placeholder="First Name" fluid />
                     <Message v-if="$field?.error" severity="error" variant="simple" size="small">
                         {{ $field.error.message }}
                     </Message>
                 </FormField>
 
                 <FormField name="lastName" class="flex flex-column gap-1" v-slot="$field">
-                    <label for="lastName" class="font-medium">Last Name</label>
-                    <InputText id="lastName" type="text" placeholder="Last Name" fluid />
+                    <label for="lastname" class="font-medium">Last Name</label>
+                    <InputText id="lastname" type="text" placeholder="Last Name" fluid />
                     <Message v-if="$field?.error" severity="error" variant="simple" size="small">
                         {{ $field.error.message }}
                     </Message>
@@ -39,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref } from 'vue'
+    import { ref, computed } from 'vue'
     import { z } from 'zod'
     import { zodResolver } from '@primevue/forms/resolvers/zod'
     import { useToast } from 'primevue/usetoast'
@@ -53,10 +52,12 @@
     const userStore = useUserStore()
 
     // Define the initial state of the registration form
-    const initialValues = ref<{}>({
-        firstName: '',
-        lastName: ''
-    })
+    // Setting as computed so ZOD can validate the form values and set the initial values of the form fields based on the current user data. 
+    // This ensures that the form is pre-populated with the user's existing information, allowing for a seamless update experience.
+    const initialValues = computed<FullNameFormValues>(() => ({
+        firstName: userStore.getUser?.firstName ?? '',
+        lastName: userStore.getUser?.lastName ?? ''
+    }))
 
     // Define the validation rules using Zod
     const updateFullNameSchema = z.object({
@@ -69,21 +70,20 @@
 
     // Handle form submission
     const onFormSubmit = async (e: FormSubmitEvent) => {
-        const payload = <FullNameFormValues>{
-            id: userStore.getUser?.id,
-            firstName: e.values.firstName,
-            lastName: e.values.lastName
-        }
+        const userId = userStore.getUser?.id
 
+        if (!userId) {
+            toast.add({ severity: 'error', summary: 'Account update Failed', detail: 'User ID is missing.', life: 5000 })
+            return
+        }
+        
         if (e.valid) {
             try {
-                await execute(() => UserService.updateFirstLastName(payload))
+                const user = await execute(() => UserService.updateUser({ id: userId, ...e.values }))
 
                 toast.add({ severity: 'success', summary: 'Account update Successfull!', detail: `Full name updated successfully to ${e.values.firstName} ${e.values.lastName}!`, life: 5000 })
-                
-                e.reset()
 
-                await userStore.fetchUserProfile(payload.id)
+                await userStore.setUser(user?.data)
                 return
             } catch (err) {
                 console.log(err)

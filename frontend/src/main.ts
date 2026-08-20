@@ -31,7 +31,9 @@ import {
     UserEdit,
     Key,
     Envelope,
-    CalendarClock
+    CalendarClock,
+    Hashtag,
+    Shield 
 } from '@primeicons/vue'
 
 
@@ -112,5 +114,8 @@ app.component('UserEdit', UserEdit)
 app.component('Key', Key)
 app.component('Envelope', Envelope)
 app.component('CalendarClock', CalendarClock)
+app.component('Hashtag', Hashtag)
+app.component('Shield', Shield)
+
 
 app.mount('#app')

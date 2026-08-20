@@ -2,6 +2,9 @@ export interface RegisterFormValues {
     username: string;
     email: string;
     password: string;
+    firstName: string;
+    lastName: string;
+    permissions: string;
 }
 
 export interface FormSubmitEvent {

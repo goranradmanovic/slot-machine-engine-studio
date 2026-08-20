@@ -3,8 +3,8 @@ import type { UserPermission } from "./user-permission.types.ts"
 
 export interface RegisterDto {
     username: string;
-    //firstName: string;
-    //lastName: string;
+    firstName?: string;
+    lastName?: string;
     email: string;
     password: string;
 }

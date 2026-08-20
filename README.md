@@ -124,6 +124,63 @@ The permission system is designed so that application functionality can be prote
 
 ---
 
+### 👥 User Management (Admin)
+
+Administrators have complete control over user accounts across the system. In addition to managing configurations and application settings, they can perform full **CRUD** operations on every other user account through a dedicated administration interface.
+
+#### Administrator User Operations
+
+The user management panel allows administrators to:
+
+* Create new user accounts
+* View all registered users
+* Edit user information
+* Change user roles and permissions
+* Reset user passwords
+* Delete user accounts
+* Search and filter users
+* Manage account status
+
+#### User Lifecycle
+
+The administration workflow follows a standard **CRUD** lifecycle.
+
+```text
+Create User
+  │
+  ▼
+View User
+  │
+  ▼
+Update User
+  │
+  ▼
+Delete User
+
+```
+
+#### Available Actions
+
+| **Action** | **Description** |
+|------------|-----------------|
+| **Create** | Register a new user with an initial role. |
+| **Read** | View all users and their account information. |
+| **Update** | Modify profile details, permissions, and account settings. |
+| **Delete** | Permanently remove a user account from the system. |
+| **Role Management** | Assign `basic`, `manager`, or `admin` roles. |
+| **Password Reset** | Reset passwords for user accounts when required. |
+
+#### Security Rules
+
+User management is protected by backend authorization checks to ensure only administrators can perform these operations.
+
+* Only users with the admin role can access user management endpoints.
+* Role changes take effect immediately.
+* Permission updates invalidate affected sessions when required.
+* Every protected endpoint is verified on the server, preventing unauthorized access through direct **API** calls.
+
+---
+
 # 📊 Simulation
 
 The project includes a **simulation interface directly inside the frontend dashboard**.
@@ -696,6 +753,13 @@ Screenshots of the following areas can be added here:
 ![Admin](./screenshots/20.png "Admin Permission")
 ![Manager](./screenshots/21.png "Manager Permission")
 ![Basic](./screenshots/22.png "Bassic Permission")
+
+### User Management
+
+![User Management Table](./screenshots/23.png "Admin User Management")
+![Create User Dialog](./screenshots/24.png "Create User")
+![Edit User Dialog](./screenshots/25.png "Edit User")
+![Delete User Dialog](./screenshots/26.png "Delete User")
 
 ### Configuration Management
 

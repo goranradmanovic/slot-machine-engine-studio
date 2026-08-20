@@ -88,6 +88,12 @@
             )
         }
 
+        if (userStore.hasPermissions('admin')) {
+            items.push(
+                { label: 'Users', icon: 'pi pi-users', route: '/users' }
+            )
+        }
+
         return items
     })
 

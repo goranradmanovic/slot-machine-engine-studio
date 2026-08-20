@@ -37,7 +37,7 @@ const router = createRouter({
     {
       path: '/config-editor',
       name: 'config-editor',
-      component: () => import('../views/ConfigEditorView.vue'),
+      component: () => import('../views/config/ConfigEditorView.vue'),
       meta: { 
         requiresAuth: true, 
         requiredPermission: 'manager' //Permission.CONFIG_MANAGE // Locked to Config Editors / Admins
@@ -46,7 +46,7 @@ const router = createRouter({
     {
       path: '/config-files',
       name: 'config-files',
-      component: () => import('../views/ConfigFilesView.vue'),
+      component: () => import('../views/config/ConfigFilesView.vue'),
       meta: { 
         requiresAuth: true, 
         requiredPermission: 'manager' // Locked to Config Editors / Admins
@@ -57,6 +57,15 @@ const router = createRouter({
       name: 'settings',
       component: () => import('../views/user/SettingsView.vue'),
       meta: { requiresAuth: true } // Profile / Settings open to logged-in users
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: () => import('../views/user/UsersView.vue'),
+      meta: { 
+        requiresAuth: true,
+        requiredPermission: 'admin'
+      }
     },
     {
       path: '/:pathMatch(.*)*',

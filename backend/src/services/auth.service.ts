@@ -14,7 +14,7 @@ export class AuthService {
 
     // Create new user in DB
     static async register(data: RegisterDto) {
-        const { username, email, password } = data
+        const { username, email, password, firstName, lastName } = data
 
         const existingEmail = await UserRepository.findByEmail(email)
 
@@ -25,10 +25,10 @@ export class AuthService {
         if (existingUsername) throw new ApiError(409, 'Username alrady exists.')
 
         const hashedPassword = await hashPassword(password)
-        
+
         const permissions = PermissionService.getDefaultPermissions()
 
-        const user = await UserRepository.create({ username, email, password: hashedPassword, permissions: stringifyPermissions(permissions) })
+        const user = await UserRepository.create({ username, email, password: hashedPassword, firstName, lastName, permissions: permissions })
 
         await EmailService.send({
             template: EmailTemplate.WELCOME,
@@ -43,7 +43,8 @@ export class AuthService {
             lastName: user.lastName,
             email: user.email,
             permissions: user.permissions,
-            createdAt: user.createdAt
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
         }
     }
 

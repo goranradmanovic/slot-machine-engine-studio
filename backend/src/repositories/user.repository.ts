@@ -6,10 +6,16 @@ import { ApiError } from "../utils/api-error.ts"
 
 export class UserRepository {
 
+    static async findAll(): Promise<User[]> {
+        const db = getDatabase()
+
+        return db.all<User[]>('SELECT id, username, firstName, lastName, email, permissions, createdAt, updatedAt FROM users')
+    }
+
     static async findById(id: number): Promise<User | undefined> {
         const db = getDatabase()
 
-        return db.get<User>('SELECT * FROM users WHERE id = ?', id)
+        return db.get<User>('SELECT id, username, firstName, lastName, email, permissions, createdAt, updatedAt FROM users WHERE id = ?', id)
     }
 
     static async findByEmail(email: string): Promise<User | undefined> {
@@ -24,14 +30,16 @@ export class UserRepository {
         return db.get<User>('SELECT * FROM users WHERE username = ?', username)
     }
 
-    static async create(user: { username: string,  email: string, password: string, permissions: string }): Promise<User> {
+    static async create(user: { username: string,  email: string, password: string, firstName: string, lastName: string, permissions: string }): Promise<User> {
         const db = getDatabase()
 
         const result = await db.run(
-            'INSERT INTO users (username, email, password, permissions) VALUES (?, ?, ?, ?)',
+            'INSERT INTO users (username, email, password, firstName, lastName, permissions) VALUES (?, ?, ?, ?, ?, ?)',
             user.username,
             user.email,
             user.password,
+            user.firstName,
+            user.lastName,
             user.permissions
         )
 
@@ -42,15 +50,41 @@ export class UserRepository {
         return createdUser
     }
 
-    static async updateUserFullName(id: number, firstName: string, lastName: string): Promise<void> {
+    static async deleteById(id: number): Promise<void> {
         const db = getDatabase()
 
-        await db.run(
-            'UPDATE users SET firstName = ?, lastName = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?',
-            firstName,
-            lastName,
-            id  
-        )
+        await db.run('DELETE FROM users WHERE id = ?', id)
+    }
+
+    static async updateUser(id: number, fieldsToUpdate: {}): Promise<User> {
+        const db = getDatabase()
+
+        // Extract keys and filter out undefined values
+        const entries = Object.entries(fieldsToUpdate).filter(([_, value]) => value !== undefined)
+
+        // If the payload is empty, do nothing to prevent SQL errors
+        if (entries.length === 0) return
+
+        // Map entries to SQL "column = ?" strings
+        const assignments = entries.map(([key]) => `${key} = ?`).join(', ')
+
+        // Gather the values in the exact order of the columns
+        const values = entries.map(([_, value]) => value)
+
+        // Construct the final query text
+        const query = `UPDATE users SET ${assignments}, updatedAt = CURRENT_TIMESTAMP WHERE id = ?`
+
+        // Append the ID to the end of the values array for the WHERE clause
+        values.push(id)
+
+        // Execute the safe, parameterized query
+        await db.run(query, ...values)
+
+        const updatedUser = await this.findById(id)
+
+        if (!updatedUser) throw new Error('Failed to update user.')
+
+        return updatedUser
     }
 
     static async updatePassword(id: number, password: string): Promise<void> {

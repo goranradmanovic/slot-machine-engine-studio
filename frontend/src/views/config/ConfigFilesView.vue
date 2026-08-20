@@ -113,8 +113,8 @@
     import { useApi } from '@/composables/useApi'
     import { useUserStore } from '@/stores/userStore'
     import { useToast } from 'primevue/usetoast'
-    import ViewEditDialog from '@/components/dialogs/ViewEditDialog.vue'
-    import DeleteFileDialog from '@/components/dialogs/DeleteFileDialog.vue'
+    import ViewEditDialog from '@/components/dialogs/config/ViewEditDialog.vue'
+    import DeleteFileDialog from '@/components/dialogs/config/DeleteFileDialog.vue'
 
     const { loading, error, post, get } = useApi()
     const toast = useToast()

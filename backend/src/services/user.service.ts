@@ -1,6 +1,6 @@
 import { ApiError } from "../utils/api-error.ts"
 import { UserRepository } from "../repositories/user.repository.ts"
-import type { UserResponseDto } from '../types/user.types.ts'
+import type { UserResponseDto, UserPatchPayloadDto } from '../types/user.types.ts'
 import { Permission } from "../enums/permission.enum.ts"
 import { RefreshTokenRepository } from "../repositories/refresh-token.repository.ts"
 
@@ -32,7 +32,17 @@ export class UserService {
         await RefreshTokenRepository.deleteByUserId(userId)
     }
 
-    static async updateUserFullName(userId: number, firstName: string, lastName: string) {
-        await UserRepository.updateUserFullName(userId, firstName, lastName)
+    static async updateUser(userId: number, fieldsToUpdate: UserPatchPayloadDto) {
+        return await UserRepository.updateUser(userId, fieldsToUpdate)
+    }
+
+    static async getUsers(): Promise<UserResponseDto[]> {
+        return await UserRepository.findAll()
+    }
+
+    static async deleteUserById(userId: number): Promise<void> {
+        await UserRepository.deleteById(userId)
+        // Delete all user tokens to logout it, so updated permissions get applied
+        await RefreshTokenRepository.deleteByUserId(userId)
     }
 }

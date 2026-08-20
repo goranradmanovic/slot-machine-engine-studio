@@ -1,10 +1,9 @@
-import type { UpdateFullNameDto } from '@/dto/users/UpdateFullNameDto'
+import type { UserDto } from '@/dto/users/UserDto'
 import { apiClient } from '@/api/ApiClient'
 
 export class UserService {
-
-    static async updateFirstLastName(dto: UpdateFullNameDto): Promise<void> {
-        const response = await apiClient.put(`users/${dto.id}/user`, dto)
+    static async updateUser(dto: UserDto): Promise<void> {
+        const response = await apiClient.patch(`users/${dto.id}`, dto)
         return response
     }
 }

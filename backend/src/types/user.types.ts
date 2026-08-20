@@ -33,7 +33,11 @@ export interface UpdateUserPermissionsDto {
     permissions: Permission[]
 }
 
-export interface UpdateFirstLastNameDto {
-    firstName: string;
-    lastName: string;
+export type UserPatchPayloadDto = {
+    id: number;
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    permissions?: string;
 }
