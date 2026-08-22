@@ -97,6 +97,7 @@
     import { useToast } from 'primevue/usetoast'
     import { AuthService } from '@/services/AuthService'
     import { UserService } from '@/services/UserService'
+    import { parseJsonArray } from '@/utils/parseJsonArray'
 
     const props = defineProps<{
         user: {},
@@ -188,10 +189,10 @@
                 confirmPassword: '',
                 firstName: props.user.firstName || '',
                 lastName: props.user.lastName || '',
-                permissions: props.user.permissions || 'basic'
+                permissions: parseJsonArray(props.user.permissions)[0] || 'basic'
             }
 
-            selectedPermissions.value = props.user.permissions || 'basic'
+            selectedPermissions.value = parseJsonArray(props.user.permissions)[0] || 'basic'
         } else {
             initialValues.value = {
                 username: '',
@@ -210,8 +211,7 @@
         if (e.valid) {
             try {
                 if (props.isEdit) {
-
-                    console.log('e values - ', e.values)
+                    e.values.permissions = JSON.stringify([e.values.permissions])
 
                     // Edit existing user
                     const result = await execute(() => UserService.updateUser({ id: props.user?.id, ...e.values }))

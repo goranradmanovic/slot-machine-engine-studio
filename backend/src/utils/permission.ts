@@ -1,11 +1,13 @@
 import type { Permission } from '../enums/permission.enum.ts'
 
-export function parsePermissions(permissions: string | null | undefined): Permission[] {
-
+export function parsePermissions(permissions: string | Permission[] | null | undefined): Permission[] {
     if (!permissions) return []
 
+    if (Array.isArray(permissions)) return permissions
+
     try {
-        return JSON.parse(permissions) as Permission[]
+        const parsed = JSON.parse(permissions) as Permission[]
+        return Array.isArray(parsed) ? parsed : []
     } catch {
         return []
     }
@@ -26,7 +28,6 @@ export function hasAnyPermission(userPermissions: Permission[], permissions: Per
 export function hasAllPermissions(userPermissions: Permission[], permissions: Permission[]): boolean {
     return permissions.every(permission => userPermissions.includes(permission))
 }
-
 
 /*
     mergePermissions()

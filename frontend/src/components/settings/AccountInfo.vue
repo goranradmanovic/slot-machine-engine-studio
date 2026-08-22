@@ -17,7 +17,7 @@
           shape="circle" 
         />
         <div class="flex flex-column gap-1 align-items-center justify-items-center">
-          <div class="flex gap-2 justify-content-between w-full"> 
+          <div class="flex gap-2 w-full"> 
             <span class="text-primary text-base">@{{ user.username }}</span> - 
             <Tag :value="`ID: #${user.id}`" severity="primary" rounded />
           </div>
@@ -53,8 +53,8 @@
           <span class="uppercase text-xs text-color-secondary font-medium">Assigned Permissions</span>
           <div class="flex gap-2">
             <Tag 
-              :value="user.permissions" 
-              :severity="getPermissionSeverity(user.permissions)"
+              :value="getUserPermission()" 
+              :severity="getPermissionSeverity(getUserPermission())"
               icon="pi pi-shield"
               class="uppercase font-medium"
             />
@@ -79,6 +79,7 @@
     import { ref, computed, watch, onMounted } from 'vue'
     import type { UserDto } from '@/dto/users/UserDto'
     import { useUserStore } from '@/stores/userStore'
+    import { parseJsonArray } from '@/utils/parseJsonArray'
 
     const emits = defineEmits<{
       (e: 'edit-account'): void,
@@ -110,6 +111,11 @@
           day: 'numeric'
       })
     })
+
+    // Helper to get the first permission from a JSON array
+    const getUserPermission = () => {
+      return parseJsonArray(user.value.permissions)[0]
+    }
 
     // Assign visual severity (colors) based on permission scope
     const getPermissionSeverity = (perm: string) => {

@@ -26,7 +26,7 @@
                     <Avatar :label="avatarLabel" class="mr-2" shape="circle" />
                     <span class="flex flex-column align-items-start gap-1">
                         <span class="text-sm font-bold">{{ userFullName || userUsername }}</span>
-                        <span class="uppercase text-xs">{{ userRole }}</span>
+                        <span class="uppercase text-xs">{{ parseJsonArray(userRole)[0] }}</span>
                     </span>
                 </button>
             </template>
@@ -40,6 +40,7 @@
     import { useUserStore } from "@/stores/userStore"
     import { useAuthStore } from "@/stores/authStore"
     import { AuthService } from "@/services/AuthService"
+    import { parseJsonArray } from '@/utils/parseJsonArray'
     import { useToast } from 'primevue/usetoast'
     import { useApi } from "@/composables/useApi"
     import Cog from '@primeicons/vue/cog'

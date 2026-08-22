@@ -17,9 +17,17 @@ export class RefreshTokenRepository {
     static async findSession(tokenHash: string) {
         const db = getDatabase()
 
-        return db.get(
+        return db.get<{
+            sessionId: string
+            userId: number
+            expiresAt: string
+            id: number
+            username: string
+            email: string
+            permissions: string
+        }>(
             `
-                SELECT rt.sessionId, rt.userId, rt.expiresAt, u.id, u.username, u.email
+                SELECT rt.sessionId, rt.userId, rt.expiresAt, u.id, u.username, u.email, u.permissions
                 FROM refresh_tokens rt
                 INNER JOIN users u 
                 ON u.id = rt.userId

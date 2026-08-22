@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express'
 import { ApiError } from '../utils/api-error.ts'
 import { verifyAccessToken } from '../utils/jwt.ts'
-
+import { parsePermissions } from '../utils/permission.ts'
 
 export function authenticate(req: Request, res: Response, next: NextFunction) {
     
@@ -18,7 +18,11 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
     }
 
     try {
-        req.user = verifyAccessToken(token)
+        const payload = verifyAccessToken(token)
+        req.user = {
+            ...payload,
+            permissions: parsePermissions(payload.permissions)
+        }
         next()
     } catch {
         next(new ApiError(401, 'Unauthorized'))

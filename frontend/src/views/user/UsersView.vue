@@ -70,7 +70,7 @@
             <Column field="permissions" header="Permission" #body="slotProps" sortable>
                 <div class="flex align-items-center gap-1 capitalize">
                     <Shield color="gray" />
-                    {{ slotProps.data.permissions }}
+                    {{ parseJsonArray(slotProps.data.permissions)[0] }}
                  </div>
             </Column>
             <Column field="createdAt" header="Created At" #body="slotProps" sortable>
@@ -105,6 +105,7 @@
 <script setup lang="ts">
     import { ref, onMounted, computed } from 'vue'
     import { FilterMatchMode } from '@primevue/core/api'
+    import { parseJsonArray } from '@/utils/parseJsonArray'
     import { useApi } from '@/composables/useApi'
     import { useToast } from 'primevue/usetoast'
     import CreateEditUserDialog from '@/components/dialogs/users/CreateEditUserDialog.vue'

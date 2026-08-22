@@ -3,7 +3,7 @@ import { AuthController } from '../controllers/auth.controller.ts'
 import { asyncHandler } from '../../../utils/async-handler.ts'
 import { validate } from '../../../middlewares/validation.middleware.ts'
 import { authenticate } from '../../../middlewares/auth.middleware.ts'
-import { registerSchema, loginSchema, changePasswordSchema, forgotPasswordSchema, resetPasswordSchema, updateFirstLastNameSchema } from '../../../validations/auth.validation.ts'
+import { registerSchema, loginSchema, changePasswordSchema, forgotPasswordSchema, resetPasswordSchema } from '../../../validations/auth.validation.ts'
 
 const router = Router()
 

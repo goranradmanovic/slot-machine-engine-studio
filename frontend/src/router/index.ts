@@ -86,7 +86,7 @@ router.beforeEach((to, from) => {
   if (!isAuthenticated) {
     authStore.setAuthenticated(false)
     userStore.setUser(null)
-    AuthService.sessionExpired()
+    // AuthService.sessionExpired()
   }
 
   // 2. Redirect logged-in users away from Auth pages (Login, Register, etc.)

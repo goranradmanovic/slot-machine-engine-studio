@@ -7,6 +7,7 @@ export interface ApiRequestOptions extends RequestInit {
 class ApiClient {
 
     private readonly apiUrl: string
+    private refreshPromise: Promise<boolean> | null = null
 
     constructor() {
         const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost'
@@ -104,6 +105,7 @@ class ApiClient {
 
             const refreshed = await this.refreshToken()
 
+            console.log('Token refreshed API CLINET:', refreshed)
             if (refreshed) {
                 return this.request<T>(
                     endpoint,
@@ -126,28 +128,38 @@ class ApiClient {
         return body as T
     }
 
-    private async refreshToken(): Promise<boolean> {
+    private refreshToken(): Promise<boolean> {
+        if (this.refreshPromise) {
+            return this.refreshPromise
+        }
 
+        this.refreshPromise = this.doRefresh()
+
+        return this.refreshPromise.finally(() => {
+            this.refreshPromise = null
+        })
+    }
+
+    private async doRefresh(): Promise<boolean> {
         const refreshToken = Auth.getRefreshToken()
 
         if (!refreshToken) return false
 
-        const response = await fetch(
-            `${this.apiUrl}/auth/refresh`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ refreshToken })
-            }
-        )
+        const response = await fetch(`${this.apiUrl}/auth/refresh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refreshToken }),
+        })
 
-        if (!response.ok) {
-            return false
-        }
+        if (!response.ok) return false
 
         const json = await response.json()
 
-        Auth.setTokens(json.data.accessToken, json.data.refreshToken)
+        Auth.setAccessToken(json.data.accessToken)
+
+        if (json.data.refreshToken) {
+            Auth.setRefreshToken(json.data.refreshToken)
+        }
 
         return true
     }

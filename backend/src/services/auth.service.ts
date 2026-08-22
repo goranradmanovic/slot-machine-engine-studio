@@ -8,7 +8,7 @@ import { generateSessionId, hashToken } from "../utils/crypto.ts"
 import { EmailService } from "../email/email.service.ts"
 import { EmailTemplate } from "../email/email-template.ts"
 import { PermissionService } from "../services/permission.service.ts"
-import { stringifyPermissions } from "../utils/permission.ts"
+import { parsePermissions, stringifyPermissions } from "../utils/permission.ts"
 
 export class AuthService {
 
@@ -28,7 +28,7 @@ export class AuthService {
 
         const permissions = PermissionService.getDefaultPermissions()
 
-        const user = await UserRepository.create({ username, email, password: hashedPassword, firstName, lastName, permissions: permissions })
+        const user = await UserRepository.create({ username, email, password: hashedPassword, firstName, lastName, permissions: stringifyPermissions(permissions) })
 
         await EmailService.send({
             template: EmailTemplate.WELCOME,
@@ -68,7 +68,7 @@ export class AuthService {
             sid: sessionId,
             username: user.username,
             email: user.email,
-            permissions: user.permissions
+            permissions: parsePermissions(user.permissions)
         }
 
         const accessToken = generateAccessToken(payload)
@@ -99,7 +99,6 @@ export class AuthService {
         const session = await RefreshTokenRepository.findSession(oldHash)
 
         if (!session) throw new ApiError(401, 'Invalid refresh token.')
-
         const sessionId = generateSessionId()
 
         const newPayload = {
@@ -107,7 +106,7 @@ export class AuthService {
             sid: sessionId,
             username: session.username,
             email: session.email,
-            permissions: session.permissions
+            permissions: parsePermissions(session.permissions)
         }
 
         const accessToken = generateAccessToken(newPayload)

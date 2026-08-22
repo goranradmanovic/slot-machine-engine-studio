@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
 import { ApiResponse } from '../../../utils/api-response.ts'
 import { AuthService } from '../../../services/auth.service.ts'
-import type { RegisterDto, LoginDto, ResetPasswordDto, ChangePasswordDto, UpdateFirstLastNameDto } from '../../../types/auth.types.ts'
+import type { RegisterDto, LoginDto, ResetPasswordDto, ChangePasswordDto } from '../../../types/auth.types.ts'
 import type { ForgotPasswordDto } from '../../../types/auth.types.ts'
 import { getRefreshCookieOptions } from '../../../utils/cookies.ts'
 import { appConfig } from '../../../config/app.config.ts'
@@ -32,6 +32,7 @@ export class AuthController {
     }
 
     static async refresh(req: Request, res: Response): Promise<void> {
+
         const refreshToken = req.body?.refreshToken || req.cookies[appConfig.cookieName]
 
         if (!refreshToken) throw new ApiError(401, 'Refresh token missing.')
@@ -41,7 +42,7 @@ export class AuthController {
         res.cookie(appConfig.cookieName, tokens.refreshToken, getRefreshCookieOptions())
 
         res.json(
-            new ApiResponse(true, 'Token refreshed', { accessToken: tokens.accessToken })
+            new ApiResponse(true, 'Token refreshed', { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken })
         )
     }
 
@@ -87,7 +88,7 @@ export class AuthController {
             new ApiResponse(
                 true,
                 'If the account exists, a password reset email will be sent',
-                //appConfig.enviroment === 'development' ? { resetToken } : null
+                appConfig.enviroment === 'development' ? { resetToken } : null
             )
         )
     }
