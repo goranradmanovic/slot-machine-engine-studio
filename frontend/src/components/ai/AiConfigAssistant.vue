@@ -56,7 +56,7 @@
                         @click="generateConfig"
                         severity="success" 
                     >
-                        <Spinner v-if="loading" />
+                        <Spinner v-if="loading" spin />
                         <Lightbulb v-else />
                         {{ loading ? 'Generating...' : 'Generate Config' }}
                     </Button>
