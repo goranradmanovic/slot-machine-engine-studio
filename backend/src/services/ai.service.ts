@@ -63,7 +63,10 @@ export class AiService {
                 messages: [
                     { role: 'system', content: SLOT_CONFIG_SYSTEM_PROMPT },
                     { role: 'user', content: prompt }
-                ]
+                ],
+                response_format: {
+                    type: 'json_object'
+                }
             })
         } catch (error) {
             console.log('[AiService] AI request failed: ', error)
