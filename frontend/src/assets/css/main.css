@@ -1,6 +1,22 @@
 @import 'primeicons/primeicons.css';
 @import './base.css';
 
+.p-listbox.ai-config-changes__list {
+  & ul.p-listbox-list {
+    & li.p-listbox-option.p-listbox-option-selected {
+      background: unset;
+    }
+  }
+}
+
+.p-listbox.ai-config-changes__list.p-listbox-striped {
+  & ul.p-listbox-list {
+    & li:nth-child(even of .p-listbox-option) {
+      background: var(--p-listbox-option-striped-background);
+    }
+  }
+}
+
 #p-license-host {
   display: none !important;
 }
@@ -87,7 +103,6 @@
     }
   }
 }
-
 
 /* Animations */
 

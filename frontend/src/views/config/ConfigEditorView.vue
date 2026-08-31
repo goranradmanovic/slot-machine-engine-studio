@@ -35,17 +35,22 @@
 
         <Tabs value="0">
           <TabList>
-            <Tab value="0"><i class="pi pi-sliders-h mr-2" /> Visual Adjuster</Tab>
-            <Tab value="1"><i class="pi pi-code mr-2" /> Raw JSON</Tab>
-            <Tab value="2"><i class="pi pi-wave-pulse mr-2" /> Engine Math Simulator</Tab>
+            <Tab value="0"><i class="pi pi-microchip-ai mr-2" /> AI Assistant</Tab>
+            <Tab value="1"><i class="pi pi-sliders-h mr-2" /> Visual Adjuster</Tab>
+            <Tab value="2"><i class="pi pi-code mr-2" /> Raw JSON</Tab>
+            <Tab value="3"><i class="pi pi-wave-pulse mr-2" /> Engine Math Simulator</Tab>
           </TabList>
           
           <TabPanels>
             <TabPanel value="0">
+              <AiConfigAssistant :config="parsedConfig" @update:config="handleConfigApply" @undo:config="handleConfigUndo" />
+            </TabPanel>
+
+            <TabPanel value="1">
               <VisualAdjuster :current-config="parsedConfig" @update:config="handleConfigUpdate" />
             </TabPanel>
             
-            <TabPanel value="1">
+            <TabPanel value="2">
                 <div class="px-2">
                   <div class="raw-json-editor mb-4">
                     <JsonEditorVue v-model="data" :mode="'text'" :main-menu-bar="true" />
@@ -54,14 +59,15 @@
                     @click="saveConfig()"
                     :disabled="loading"
                     :loading="loading"
-                    icon="pi pi-save" 
-                    label="Save Changes" 
                     severity="success" 
-                  />
+                  >
+                    <Save />
+                    Save Changes
+                  </Button>
                 </div>
             </TabPanel>
 
-            <TabPanel value="2">
+            <TabPanel value="3">
               <EngineSimulator :config="parsedConfig" />
             </TabPanel>
           </TabPanels>
@@ -69,6 +75,8 @@
       </div>
       <Message v-else severity="secondary">Please select config version</Message>
     </Panel>
+
+    <ConfirmConfigDialog v-model:visible="confirmDialog" :is-undo="undoAiConfig" @save="saveAiGeneratedConfig" @undo="undoAiGeneratedConfig" />
   </div>
 </template>
 
@@ -80,7 +88,9 @@
   import { useUserStore } from '@/stores/userStore'
   import AvailableVersions from '@/components/AvailableVersions.vue'
   import VisualAdjuster from '@/components/visual-editor/VisualAdjuster.vue'
+  import AiConfigAssistant from '@/components/ai/AiConfigAssistant.vue'
   import EngineSimulator from '@/components/simulation-dashboard/EngineSimulator.vue'
+  import ConfirmConfigDialog from '@/components/dialogs/config/ConfirmConfigDialog.vue'
 
   const toast = useToast()
   const data = ref<{} | null>(null)
@@ -92,6 +102,10 @@
   const selectedVersion = ref<string>('')
   const statusMessage = ref<string>('')
   const statusType = ref<'success' | 'error' | 'info' | 'warn'>('info')
+  const confirmDialog = ref<boolean>(false)
+  const undoAiConfig = ref<boolean>(false)
+  let aiGeneratedConfig = <object | null> null
+  let previousConfig = <object | null> null
 
   // computed property to guarantee an object format
   const parsedConfig = computed(() => {
@@ -110,8 +124,10 @@
   const loadConfig = async () => {
     try {
       statusMessage.value = ''
-      //await fetchData(`configs/files/${selectedVersion.value}`)
+
       data.value = await get(`configs/files/${selectedVersion.value}?${qeuryString}`)
+      previousConfig = structuredClone(toRaw(data.value))
+
       if (error.value) throw new Error('Could not find or read config file')
     } catch (err) {
       statusType.value = 'error'
@@ -137,7 +153,8 @@
         payload = structuredClone(payload)
       }
 
-      await patch(`configs/files/${selectedVersion.value}`, { id: userId, data: payload })
+      const response = await patch(`configs/files/${selectedVersion.value}`, { id: userId, data: payload })
+      data.value = response?.data
 
       if (error.value) throw new Error('Server rejected saving changes')
 
@@ -158,5 +175,25 @@
 
   const handleConfigUpdate = (payload: object) => {
     saveConfig(payload)
+  }
+
+  const handleConfigApply = (payload: object) => {
+    aiGeneratedConfig = payload
+    confirmDialog.value = true
+  }
+
+  const handleConfigUndo = () => {
+    undoAiConfig.value = true
+    confirmDialog.value = true
+  }
+
+  const saveAiGeneratedConfig = () => {
+    saveConfig(aiGeneratedConfig)
+    confirmDialog.value = false
+  }
+
+  const undoAiGeneratedConfig = () => {
+    saveConfig(previousConfig)
+    undoAiConfig.value = false
   }
 </script>

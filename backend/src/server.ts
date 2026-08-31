@@ -39,7 +39,6 @@ io.on('connection', socket => {
     console.log('Client connected')
 
     socket.on('request-config', async (version: string | unknown, id: number | unknown) => {
-        console.log('Client requested config')
         const filename = version
         const userFolder = `config-${id}`
 

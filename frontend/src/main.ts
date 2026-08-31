@@ -33,7 +33,16 @@ import {
     Envelope,
     CalendarClock,
     Hashtag,
-    Shield 
+    Shield, 
+    ArrowRight,
+    CircleFill,
+    ExclamationTriangle,
+    Undo,
+    Save, 
+    Lightbulb, 
+    Eraser, 
+    ThumbsDown, 
+    ThumbsUp
 } from '@primeicons/vue'
 
 
@@ -116,6 +125,16 @@ app.component('Envelope', Envelope)
 app.component('CalendarClock', CalendarClock)
 app.component('Hashtag', Hashtag)
 app.component('Shield', Shield)
+app.component('ArrowRight', ArrowRight)
+app.component('CircleFill', CircleFill)
+app.component('ExclamationTriangle', ExclamationTriangle)
+app.component('Undo', Undo)
+app.component('Save', Save)
+app.component('Lightbulb', Lightbulb)
+app.component('Eraser', Eraser)
+app.component('ThumbsUp', ThumbsUp)
+app.component('ThumbsDown', ThumbsDown)
+
 
 
 app.mount('#app')

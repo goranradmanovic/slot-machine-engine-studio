@@ -105,7 +105,6 @@ class ApiClient {
 
             const refreshed = await this.refreshToken()
 
-            console.log('Token refreshed API CLINET:', refreshed)
             if (refreshed) {
                 return this.request<T>(
                     endpoint,
