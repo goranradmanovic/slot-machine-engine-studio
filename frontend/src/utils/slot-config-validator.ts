@@ -38,7 +38,7 @@ export function validateSlotConfig(config: unknown): SlotConfigValidationResult 
 
     validateNonNegativeNumber(value.CHECK_WIN_DELAY, 'CHECK_WIN_DELAY', errors)
 
-    validatePositiveNumber( value.BET, 'BET', errors)
+    validatePositiveNumber(value.BET, 'BET', errors)
 
     // Boolean properties
     if (typeof value.HAS_FREE_SPINS !== 'boolean') {
@@ -79,8 +79,11 @@ export function validateSlotConfig(config: unknown): SlotConfigValidationResult 
         errors.push('FRAME_SPINE_BG_COLOR_OPACITY must be a number between 0 and 1.')
     }
 
+    // Winlines - validation for AI generated WINLINES
+    //validateWinLines(value.WINLINES, value.REEL_COUNT, value.SYMBOLS_PER_REEL, errors, warnings)
+
     // Winlines
-    validateWinLines(value.WINLINES, value.REEL_COUNT, value.SYMBOLS_PER_REEL, errors, warnings)
+    validateWinLines(value.WINLINES, 'WINLINES', errors)
 
     // Configuration warnings
     validateConfigurationWarnings(value, warnings)
@@ -142,6 +145,13 @@ function validateAvailableSoundType(value: unknown, field: string, errors: strin
     }
 }
 
+function validateWinLines(value: WinLine[] | undefined, field: string, errors: string[]): void {
+    if (!Array.isArray(value)) {
+        errors.push(`${field} must be a array.`)
+    }
+}
+
+/* // Helper function for AI generated WINLINES
 function validateWinLines(
     winLines: unknown,
     reelCount: unknown,
@@ -234,6 +244,7 @@ function validateWinLines(
         warnings.push('The configuration contains a high number of WINLINES.')
     }
 }
+*/
 
 // Configuration warnings
 function validateConfigurationWarnings(config: Partial<SlotConfig>, warnings: string[]): void {

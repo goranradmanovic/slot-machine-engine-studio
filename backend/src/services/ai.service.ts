@@ -7,6 +7,7 @@ import { buildSlotConfigPrompt } from './prompts/slot-config.builder.ts'
 import { SLOT_CONFIG_SYSTEM_PROMPT } from './prompts/slot-config.prompt.ts'
 import { validateSlotConfig } from '../utils/slot-config-validator.ts'
 import { generateSlotConfigDiff } from '../utils/slot-config-diff.ts'
+import { generateWinLines } from '../utils/winline-generator.ts'
 
 const client = new OpenAI({ 
     apiKey: aiConfig.apiKey,
@@ -98,6 +99,9 @@ export class AiService {
 
         const generatedConfig = parsed.config as SlotMachineConfig
         const changes = generateSlotConfigDiff(currentConfig, generatedConfig)
+        const winlines = generateWinLines(generatedConfig.REEL_COUNT, generatedConfig.SYMBOLS_PER_REEL)
+
+        generatedConfig.WINLINES = winlines
 
         const warnings = [...parsed.warnings]
         const layoutChanged = changes.some(change =>

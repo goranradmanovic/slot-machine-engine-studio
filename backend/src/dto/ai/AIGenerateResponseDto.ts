@@ -5,5 +5,5 @@ export interface AIGenerateResponseDto {
     explanation: string,
     warnings: string[],
     changes: ConfigChangeDto[]
-    config: SlotMachineConfig
+    config: Partial<SlotMachineConfig>
 }
