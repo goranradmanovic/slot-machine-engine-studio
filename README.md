@@ -110,7 +110,7 @@ AI Generated Configuration
           │
           ▼
 ┌──────────────────────────────┐
-│ Configuration Diff            │
+│ Configuration Diff           │
 ├──────────────────────────────┤
 │ REEL_COUNT       5 → 6       │
 │ SYMBOL_SIZE    150 → 180     │
