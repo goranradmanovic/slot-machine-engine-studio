@@ -42,7 +42,15 @@ import {
     Lightbulb, 
     Eraser, 
     ThumbsDown, 
-    ThumbsUp
+    ThumbsUp,
+    Play,
+    Moon,
+    Sun,
+    Refresh,
+    Trash,
+    Eye,
+    Pencil,
+    Download,
 } from '@primeicons/vue'
 
 
@@ -134,6 +142,14 @@ app.component('Lightbulb', Lightbulb)
 app.component('Eraser', Eraser)
 app.component('ThumbsUp', ThumbsUp)
 app.component('ThumbsDown', ThumbsDown)
+app.component('Play', Play)
+app.component('Moon', Moon)
+app.component('Sun', Sun)
+app.component('Refresh', Refresh)
+app.component('Trash', Trash)
+app.component('Eye', Eye)
+app.component('Pencil', Pencil)
+app.component('Download', Download)
 
 
 

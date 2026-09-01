@@ -49,6 +49,8 @@
                     </div>
                 </div>
 
+                <Divider />
+                
                 <!-- Actions -->
                 <div class="flex gap-2 assistant-actions">
                     <Button

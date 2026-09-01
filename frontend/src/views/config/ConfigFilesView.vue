@@ -32,10 +32,11 @@
                         @click="createConfig()"
                         :disabled="!newFile || loading"
                         :loading="loading"
-                        icon="pi pi-plus" 
-                        label="Create New Config" 
                         severity="success" 
-                    />
+                    >
+                        <Plus />
+                        Create New Config
+                    </Button>
                 </div>
             </template>
             <template #empty>No Config files found.</template>
@@ -91,11 +92,18 @@
             </Column>
             <Column field="actions" header="Actions" #body="slotProps">
                 <div class="flex gap-3">
-                    <Button icon="pi pi-eye" @click="openEditDialog(slotProps.data.name)" />
-                    <Button severity="warn" icon="pi pi-pencil" @click="openEditDialog(slotProps.data.name, true)" />
-                    <Button severity="danger" icon="pi pi-trash" @click="openDeleteDialog(slotProps.data.name)" />
-                    <Button severity="contrast" icon="pi pi-download" @click="downloadFile(slotProps.data.name)">
-                        <Spinner v-if="downloadingFile === slotProps.data.name && loading" class="spinner" />
+                    <Button @click="openEditDialog(slotProps.data.name)" class="py-2">
+                        <Eye />
+                    </Button>
+                    <Button severity="warn" @click="openEditDialog(slotProps.data.name, true)" class="py-2">
+                        <Pencil />
+                    </Button>
+                    <Button severity="danger" @click="openDeleteDialog(slotProps.data.name)" class="py-2">
+                        <Trash />
+                    </Button>
+                    <Button severity="contrast" @click="downloadFile(slotProps.data.name)" class="py-2">
+                        <Spinner v-if="downloadingFile === slotProps.data.name && loading" class="spinner" spin />
+                        <Download v-else />
                     </Button>
                 </div>
             </Column>

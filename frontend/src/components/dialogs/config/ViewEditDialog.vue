@@ -13,11 +13,12 @@
                     @click="editConfig()"
                     :disabled="loading"
                     :loading="loading"
-                    icon="pi pi-save" 
-                    label="Save" 
                     severity="success"
                     variant="outlined" 
-                />
+                >
+                    <Save />
+                    Save
+                </Button>
             </div>
         </template>
     </Dialog>

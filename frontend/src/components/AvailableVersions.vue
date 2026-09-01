@@ -37,10 +37,11 @@
                     <Button 
                         type="submit" 
                         severity="secondary" 
-                        :label="btnLabel" 
                         class="w-full sm:w-56" 
                         :disabled="!selectedVersion" 
-                    />
+                    >
+                        {{ btnLabel }}
+                    </Button>
                 </div>
             </Form>
         </template>

@@ -19,13 +19,14 @@
         <div class="col-12">
             <Button 
                 @click="saveChanges" 
-                icon="pi pi-save" 
-                label="Save Changes"
                 severity="success" 
                 :disabled="loading"
                 :loading="loading"
                 class="mt-2"
-            />
+            >
+                <Save />
+                Save Changes
+            </Button>
         </div>
     </div>
 </template>

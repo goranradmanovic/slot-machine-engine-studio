@@ -12,8 +12,9 @@
                         <Message v-if="$field?.invalid" severity="error" size="small" variant="simple">{{ $field.error?.message }}</Message>
                     </FormField>
 
-                    <Button type="submit" label="Send" severity="secondary">
-                        <Spinner v-if="loading" />
+                    <Button type="submit" severity="secondary">
+                        <Spinner v-if="loading" spin />
+                        Send
                     </Button>
                 </Form>
             </template>

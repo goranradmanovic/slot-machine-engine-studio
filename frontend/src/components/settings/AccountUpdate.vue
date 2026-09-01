@@ -27,8 +27,9 @@
                 </FormField>
 
                 <div class="flex justify-content-end">
-                    <Button type="submit" label="Save Changes" severity="primary">
-                        <Spinner v-if="loading" />
+                    <Button type="submit" severity="primary">
+                        <Spinner v-if="loading" spin/>
+                        Save Changes
                     </Button>
                 </div>
             </Form>

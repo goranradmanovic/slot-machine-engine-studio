@@ -12,22 +12,25 @@
           </div>
           <div>
             <Button 
-              :label="isSimulating ? 'Simulating...' : 'Run 100k Spins'" 
-              :icon="isSimulating ? 'pi pi-spin pi-spinner' : 'pi pi-play'" 
               @click="runSimulation" 
               severity="warn"
               :disabled="reset"
-            />
+            >
+              <Spinner v-if="isSimulating" />
+              <Play v-else />
+              {{ isSimulating ? 'Simulating...' : 'Run 100k Spins' }}
+            </Button>
 
             <Button
               v-if="reset"
               @click="resetSimulation" 
-              icon="pi pi-refresh" 
-              label="Reset" 
               severity="success"
               :disabled="isSimulating"
               class="ml-3"
-            />
+            >
+              <Refresh />
+              Reset
+            </Button>
           </div>
         </div>
 

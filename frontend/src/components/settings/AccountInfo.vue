@@ -68,8 +68,14 @@
 
     <template #footer>
       <div class="flex gap-2 justify-content-end">
-        <Button label="Edit Profile" icon="pi pi-user-edit" severity="secondary" outlined @click="emits('edit-account')" />
-        <Button label="Manage Access" icon="pi pi-key" severity="primary" @click="emits('edit-security')" />
+        <Button severity="secondary" outlined @click="emits('edit-account')">
+          <UserEdit />
+          Edit Profile
+        </Button>
+        <Button severity="primary" @click="emits('edit-security')">
+          <Key />
+          Manage Access
+        </Button>
       </div>
     </template>
   </Card>

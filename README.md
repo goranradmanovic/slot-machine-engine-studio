@@ -30,6 +30,222 @@ The project also includes user accounts, profile management, permission-based ac
 * Dynamic configuration loading
 * Game reinitialization without losing the iframe/canvas environment
 
+### 🤖 AI Configuration Assistant
+
+* AI-generated slot configurations
+* Natural-language configuration requests
+* AI configuration validation
+* Configuration error and warning detection
+* Configuration diff generation
+* Human-in-the-loop configuration review
+* Apply or reject AI-generated changes
+* Save approved configurations through the existing CRUD workflow
+
+The project includes an **AI-powered Slot Configuration Assistant** that helps users generate slot-game configurations from natural-language requirements.
+
+Instead of manually creating every configuration property, the user can describe the configuration they need and the AI generates a proposed configuration that can then be **reviewed, validated, applied and saved** through the configuration management workflow.
+
+The AI is designed as an assistant rather than an automatic configuration publisher. Generated configurations must pass through the application's validation and review process before they can be applied.
+
+### AI Configuration Workflow
+
+The AI configuration workflow follows a controlled generation and review process:
+
+```text
+User Requirement
+       │
+       ▼
+AI Configuration Request
+       │
+       ▼
+AI Generates Configuration
+       │
+       ▼
+Configuration Validation
+       │
+       ▼
+Generate Configuration Diff
+       │
+       ▼
+User Reviews Changes
+       │
+       ├───────────────┐
+       │               │
+     Reject          Apply
+                       │
+                       ▼
+                Save Configuration
+                       │
+                       ▼
+                Configuration File
+```
+
+### AI Capabilities
+
+The AI assistant can:
+
+* Generate slot-game configuration JSON from user requirements
+* Work with the application's existing `SlotMachineConfig` structure
+* Generate configuration values according to the requested game requirements
+* Validate generated configuration data
+* Identify configuration errors and warnings
+* Compare generated configuration against the existing configuration
+* Generate a human-readable configuration diff
+* Allow the user to review generated changes before applying them
+* Apply approved configuration changes
+* Save the approved configuration through the existing configuration management workflow
+
+### Configuration Review
+
+AI-generated configurations are **not automatically applied**.
+
+Before a configuration can be saved, the generated result is compared against the current configuration.
+
+The application generates a structured configuration diff containing the properties that would be changed.
+
+For example:
+
+```text
+AI Generated Configuration
+          │
+          ▼
+┌──────────────────────────────┐
+│ Configuration Diff            │
+├──────────────────────────────┤
+│ REEL_COUNT       5 → 6       │
+│ SYMBOL_SIZE    150 → 180     │
+│ BET             10 → 20      │
+│ HAS_FREE_SPINS  false → true │
+└──────────────────────────────┘
+          │
+          ▼
+     User Review
+          │
+      ┌───┴───┐
+      │       │
+    Reject   Apply
+```
+
+This provides a clear separation between **AI generation** and **configuration deployment**.
+
+### Configuration Validation
+
+Generated configurations are passed through the application's configuration validation layer before they can be safely used.
+
+Validation can identify:
+
+* Invalid numeric values
+* Invalid configuration properties
+* Missing or incompatible values
+* Configuration errors
+* Configuration warnings
+
+The validation result distinguishes between:
+
+```text
+Validation Result
+       │
+       ├── Errors
+       │     └── Configuration cannot be applied
+       │
+       └── Warnings
+             └── Configuration may require user review
+```
+
+This ensures that the AI assistant works together with the application's existing configuration validation rather than bypassing it.
+
+### Configuration Diff
+
+The application includes a dedicated configuration-diff mechanism for comparing two `SlotMachineConfig` objects.
+
+The generated diff provides structured information about configuration changes, including the affected property and a human-readable description.
+
+Special configuration values can also receive contextual labels. For example, `WINLINES` changes can be represented by the number of paylines rather than displaying only raw JSON data.
+
+This makes AI-generated changes easier for developers and configuration managers to understand before applying them.
+
+### Human-in-the-Loop Design
+
+The AI assistant follows a **human-in-the-loop** approach.
+
+```text
+AI
+ │
+ │ Generate
+ ▼
+Configuration
+ │
+ │ Validate
+ ▼
+Validation
+ │
+ │ Diff
+ ▼
+Changes
+ │
+ │ Review
+ ▼
+User
+ │
+ ├── Reject
+ │
+ └── Apply
+       │
+       ▼
+   Save Config
+```
+
+The user remains responsible for approving the generated configuration.
+
+This approach reduces the risk of blindly applying AI-generated configuration changes while still significantly reducing the amount of manual configuration work.
+
+### AI Integration Architecture
+
+The AI assistant is integrated into the existing backend architecture.
+
+```text
+┌───────────────────────────────────────────┐
+│              Vue Dashboard                │
+│                                           │
+│  AI Configuration Assistant               │
+│  Configuration Review                     │
+│  Validation Results                       │
+│  Configuration Diff                       │
+└──────────────────┬────────────────────────┘
+                   │
+                   │ REST API
+                   ▼
+┌───────────────────────────────────────────┐
+│          Node.js / Express Backend        │
+│                                           │
+│  AI Service                               │
+│  Configuration Validation                 │
+│  Configuration Diff                       │
+│  Authorization                            │
+│  Configuration CRUD                       │
+└──────────────────┬────────────────────────┘
+                   │
+                   ▼
+             Configuration
+                 Files
+```
+
+The AI service is separated from the configuration-management logic, allowing AI generation, validation and persistence to remain independent responsibilities.
+
+### AI Technology
+
+The AI integration uses an OpenAI-compatible client configured to communicate with the selected AI provider and model.
+
+The AI service is responsible for:
+
+* Sending configuration requirements to the AI model
+* Receiving generated configuration data
+* Processing the generated response
+* Passing the result to the configuration validation layer
+* Returning the generated configuration to the application for review
+
+The AI layer does not directly bypass the application's authorization, validation or configuration-management workflow.
+
 ### 🔐 Authentication
 
 The application includes a complete user authentication system.
@@ -748,6 +964,12 @@ Screenshots of the following areas can be added here:
 ![Account security](./screenshots/16.png "Account security")
 ![Account preferences](./screenshots/16.png "Account prefrences")
 
+### AI Features
+![AI Prompt](./screenshots/27.png "AI Prompt")
+![AI Confirm](./screenshots/28.png "AI Confirm")
+![AI Changes](./screenshots/29.png "AI Changes")
+![AI Changes](./screenshots/30.png "AI Changes")
+
 ### User Permissions
 
 ![Admin](./screenshots/20.png "Admin Permission")
@@ -791,6 +1013,10 @@ The main goal of this project is to explore how a **slot-game development and co
 
 The project focuses on:
 
+* AI-assisted configuration generation
+* Human-in-the-loop AI workflows
+* Automated configuration validation
+* Configuration change comparison
 * Configuration-driven game development
 * Live configuration editing
 * Hot-reloading

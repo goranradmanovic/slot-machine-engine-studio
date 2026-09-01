@@ -5,7 +5,7 @@
             <div class="flex justify-content-end gap-2">
                 <Button severity="secondary" @click="closeDialog">Cancel</Button>
                 <Button severity="danger" @click="deleteUser">
-                    <Spinner v-if="loading" class="animate-spin" />
+                    <Spinner v-if="loading" spin />
                     Delete
                 </Button>
             </div>

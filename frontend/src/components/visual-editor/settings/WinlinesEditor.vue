@@ -13,12 +13,13 @@
                     <AccordionContent>
                         <div class="flex justify-content-end my-3">
                             <Button 
-                                icon="pi pi-plus" 
-                                label="Add Winline" 
                                 class="p-button-sm w-auto" 
                                 severity="secondary"
                                 @click="addNewWinline" 
-                            />
+                            >
+                                <Plus />
+                                Add Winline
+                            </Button>
                         </div>
                         <div class="flex flex-column gap-3 max-h-30rem overflow-y-auto pr-2">
                             <div 
@@ -56,12 +57,13 @@
                                 </div>
 
                                 <Button 
-                                    icon="pi pi-trash" 
                                     severity="danger" 
                                     text
                                     class="p-button-sm w-auto"
                                     @click="removeWinline(lineIndex)"
-                                />
+                                >
+                                    <Trash />
+                                </Button>
                             </div>
                         </div>
                     </AccordionContent>

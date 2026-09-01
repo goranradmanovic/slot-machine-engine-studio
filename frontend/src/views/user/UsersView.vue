@@ -30,11 +30,12 @@
 
                     <Button
                         @click="openEditDialog({}, false)"
-                        :loading="loading"
-                        icon="pi pi-plus" 
-                        label="Create New User" 
+                        :loading="loading" 
                         severity="success" 
-                    />
+                    >
+                        <Plus />
+                        Create New User
+                    </Button>
                 </div>
             </template>
             <template #empty>No users found.</template>
@@ -87,8 +88,12 @@
             </Column>
             <Column field="actions" header="Actions" #body="slotProps">
                 <div class="flex gap-3">
-                    <Button severity="warn" icon="pi pi-pencil" @click="openEditDialog(slotProps.data, true)" />
-                    <Button severity="danger" icon="pi pi-trash" @click="openDeleteDialog(slotProps.data)" />
+                    <Button severity="warn" @click="openEditDialog(slotProps.data, true)" class="py-2">
+                        <Pencil />
+                    </Button>
+                    <Button severity="danger" @click="openDeleteDialog(slotProps.data)" class="py-2">
+                        <Trash />
+                    </Button>
                 </div>
             </Column>
 

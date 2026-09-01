@@ -34,8 +34,9 @@
                     </Message>
                 </FormField>
 
-                <Button type="submit" label="Sign up" fluid severity="secondary">
-                    <Spinner v-if="loading" />
+                <Button type="submit" fluid severity="secondary">
+                    <Spinner v-if="loading" spin />
+                    Sign up
                 </Button>
             </Form>
         </template>

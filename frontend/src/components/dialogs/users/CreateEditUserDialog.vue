@@ -78,11 +78,12 @@
                     form="reg-form"
                     :disabled="loading"
                     :loading="loading"
-                    icon="pi pi-save" 
-                    :label="isEdit ? 'Save Changes' : 'Create User'" 
                     severity="success"
                     variant="outlined" 
-                />
+                >
+                    <Save />
+                    {{ isEdit ? 'Save Changes' : 'Create User' }}
+                </Button>
             </div>
         </template>
     </Dialog>

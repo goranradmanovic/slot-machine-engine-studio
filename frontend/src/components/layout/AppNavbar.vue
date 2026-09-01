@@ -22,28 +22,33 @@
                 <template v-if="!authStore.isAuthenticated">
                     <Button asChild v-slot="slotProps" variant="link">
                         <RouterLink to="/register" :class="slotProps.class">
-                            <i class="pi pi-user-plus" />
+                            <UserPlus />
                             Sign up
                         </RouterLink>
                     </Button>
                     <Button asChild v-slot="slotProps" variant="link">
                         <RouterLink to="/login" :class="slotProps.class">
-                            <i class="pi pi-sign-in" />
+                            <SignIn />
                             Sign in
                         </RouterLink>
                     </Button>
                 </template>
                 <template v-else>
-                    <Button v-if="isHomeRoute" @click="startGame" icon="pi pi-play" label="Simulate Spins" severity="warn" size="small" />
+                    <Button v-if="isHomeRoute" @click="startGame" severity="warn" size="small">
+                        <Play />
+                        Simulate Spins
+                    </Button>
                     <ProfileMenu class="ml-2" />
                 </template>
 
                 <Button
                     @click="themeStore.toggleDarkMode" 
-                    :icon="themeStore.isDarkTheme ? 'pi pi-moon' : 'pi pi-sun'"  
                     aria-label="Toggle Dark Mode"  
                     variant="text" 
-                />
+                >
+                    <Moon v-if="themeStore.isDarkTheme" />
+                    <Sun v-else />
+                </Button>
             </div>
         </template>
     </Menubar>

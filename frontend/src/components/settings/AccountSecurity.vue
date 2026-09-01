@@ -37,8 +37,9 @@
                     </FormField>
 
                     <div class="flex justify-content-end">
-                        <Button type="submit" label="Update password" severity="primary">
-                            <Spinner v-if="loading" />
+                        <Button type="submit" severity="primary">
+                            <Spinner v-if="loading" spin />
+                            Update password
                         </Button>
                     </div>
                 </Form>

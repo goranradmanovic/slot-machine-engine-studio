@@ -25,8 +25,9 @@
                         </Message>
                     </FormField>
 
-                    <Button type="submit" label="Reset" severity="secondary">
-                        <Spinner v-if="loading" />
+                    <Button type="submit" severity="secondary">
+                        <Spinner v-if="loading" spin />
+                        Reset Password
                     </Button>
                 </Form>
             </template>
